@@ -1,5 +1,99 @@
-#include <iostream>
+// #include <iostream>
 #include <raylib.h>
+#include <memory>
+#include <cfloat>
+#include <string>
+#include <vector>
+#include <random>
+#include <iostream>
+#include <map>
+
+struct Sprite {
+	Vector2 screenPosition;
+	Vector2 tilePosition;
+	Texture2D texture;
+	Rectangle textureTileRect;
+
+	Sprite(Vector2 screenPosition, Vector2 tilePosition, Texture2D texture, Rectangle textureTileRect) :
+		screenPosition(screenPosition), tilePosition(tilePosition), texture(texture), textureTileRect(textureTileRect) {}
+
+	void draw() {
+		Rectangle atlasTileRect = { tilePosition.x * textureTileRect.width, tilePosition.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
+		DrawTextureRec(texture, atlasTileRect, screenPosition, WHITE);
+	}
+};
+
+
+
+struct Map {
+	std::string TexturePath = "../assets/tiles.png";
+	Texture2D texture;
+	Rectangle textureTileRect;
+	std::vector<std::unique_ptr<Sprite>> sprites;
+	Vector2 size = { 32, 32 };
+	
+
+	enum class SandTileType {
+		SAND_TILE_1,
+		SAND_TILE_2,
+		SAND_TILE_3,
+	};
+
+	std::map<SandTileType, Vector2> sandTilePosition = {
+		{SandTileType::SAND_TILE_1, Vector2{42, 7}},
+		{SandTileType::SAND_TILE_2, Vector2{43, 7}},
+		{SandTileType::SAND_TILE_3, Vector2{44, 7}},
+	};
+
+	Map() {
+		texture = LoadTexture(TexturePath.c_str());
+		textureTileRect = { 0, 0, 32, 32 };
+
+		for (int x = 0; x < size.x; x++) {
+			for (int y = 0; y < size.y; y++) {
+				SandTileType sandTileType = SandTileType::SAND_TILE_1;
+				if (x % 2 == 0 && y % 2 == 0) {
+					sandTileType = SandTileType::SAND_TILE_2;
+				}
+				else if (x % 2 == 0 || y % 2 == 0) {
+					sandTileType = SandTileType::SAND_TILE_3;
+				}
+				Vector2 screenPosition = { x * textureTileRect.width, y * textureTileRect.height };
+				Vector2 tilePosition = sandTilePosition[sandTileType];
+				sprites.push_back(std::make_unique<Sprite>(screenPosition, tilePosition, texture, textureTileRect));
+			}
+		}
+	}
+
+	~Map() {
+		UnloadTexture(texture);
+	}
+
+	void draw() {
+		for (auto& sprite : sprites) {
+			sprite->draw();
+		}
+	}
+};
+
+std::unique_ptr<Map> map;
+
+void setup() {
+	map = std::make_unique<Map>();
+}
+
+void update(double deltaTime) {
+}
+
+void draw() {
+	BeginDrawing();
+	ClearBackground(RAYWHITE);
+
+	map->draw();
+
+	EndDrawing();
+}
+
 
 int main() {
 	const int screenWidth = 800;
@@ -9,15 +103,13 @@ int main() {
 
 	SetTargetFPS(60);
 
+	setup();
+
 	// Main game loop
 	while (!WindowShouldClose()) {
-	   // Update
-
-	   // Draw
-	   BeginDrawing();
-	   ClearBackground(RAYWHITE);
-	   DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-	   EndDrawing();
+		double deltaTime = GetFrameTime();
+		update(deltaTime);
+		draw();
 	}
 
 	// De-Initialization

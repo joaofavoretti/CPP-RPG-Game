@@ -26,7 +26,9 @@ target_include_directories(${MAIN_TARGET} PRIVATE ${LIB_DIR}/raylib/src)
 
 target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_17)
 
-target_compile_options(${MAIN_TARGET} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(${MAIN_TARGET} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
 
 target_link_libraries(${MAIN_TARGET} PRIVATE -lstdc++fs)
 target_link_libraries(${MAIN_TARGET} PRIVATE raylib)
