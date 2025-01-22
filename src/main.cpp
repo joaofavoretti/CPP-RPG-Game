@@ -37,27 +37,39 @@ struct Map {
 		SAND_TILE_1,
 		SAND_TILE_2,
 		SAND_TILE_3,
+		SAND_TILE_4,
+		SAND_TILE_5,
+		SAND_TILE_6,
+		SAND_TILE_7,
+		SAND_TILE_8,
 	};
 
 	std::map<SandTileType, Vector2> sandTilePosition = {
 		{SandTileType::SAND_TILE_1, Vector2{42, 7}},
 		{SandTileType::SAND_TILE_2, Vector2{43, 7}},
 		{SandTileType::SAND_TILE_3, Vector2{44, 7}},
+		{SandTileType::SAND_TILE_4, Vector2{45, 7}},
+		{SandTileType::SAND_TILE_5, Vector2{46, 7}},
+		{SandTileType::SAND_TILE_6, Vector2{47, 7}},
+		{SandTileType::SAND_TILE_7, Vector2{48, 7}},
+		{SandTileType::SAND_TILE_8, Vector2{49, 7}},
 	};
 
 	Map() {
 		texture = LoadTexture(TexturePath.c_str());
 		textureTileRect = { 0, 0, 32, 32 };
 
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<> dis(0, sandTilePosition.size() - 1);
+
 		for (int x = 0; x < size.x; x++) {
 			for (int y = 0; y < size.y; y++) {
-				SandTileType sandTileType = SandTileType::SAND_TILE_1;
-				if (x % 2 == 0 && y % 2 == 0) {
-					sandTileType = SandTileType::SAND_TILE_2;
-				}
-				else if (x % 2 == 0 || y % 2 == 0) {
-					sandTileType = SandTileType::SAND_TILE_3;
-				}
+				int randomIndex = dis(gen);
+				auto it = sandTilePosition.begin();
+				std::advance(it, randomIndex);
+				SandTileType sandTileType = it->first;
+
 				Vector2 screenPosition = { x * textureTileRect.width, y * textureTileRect.height };
 				Vector2 tilePosition = sandTilePosition[sandTileType];
 				sprites.push_back(std::make_unique<Sprite>(screenPosition, tilePosition, texture, textureTileRect));
@@ -75,6 +87,11 @@ struct Map {
 		}
 	}
 };
+
+struct Player {
+	Vector2 position;
+
+}
 
 std::unique_ptr<Map> map;
 
@@ -99,7 +116,7 @@ int main() {
 	const int screenWidth = 800;
 	const int screenHeight = 450;
 
-	InitWindow(screenWidth, screenHeight, "Simple Raylib Game");
+	InitWindow(screenWidth, screenHeight, "TDB");
 
 	SetTargetFPS(60);
 
