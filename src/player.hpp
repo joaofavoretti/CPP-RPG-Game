@@ -6,8 +6,11 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <iostream>
 
 #include "sprite.hpp"
+#include "animated_sprite.hpp"
 
 struct Player {
 	Vector2 position;
@@ -25,6 +28,7 @@ struct Player {
 	std::vector<std::unique_ptr<Sprite>> sprites;
 
 	std::unique_ptr<Sprite> wandSprite;
+	std::vector<std::unique_ptr<AnimatedSprite>> shotSprites;
 
 	enum class spriteType {
 		POSITION_1,
@@ -34,6 +38,15 @@ struct Player {
 	std::map<spriteType, Vector2> spritePosition = {
 		{spriteType::POSITION_1, Vector2{4, 74}},
 		{spriteType::POSITION_2, Vector2{5, 74}},
+	};
+
+	std::vector<Vector2> shotSpritePositions = {
+		{41, 25},
+		{42, 25},
+		{43, 25},
+		{44, 25},
+		{45, 25},
+		{46, 25},
 	};
 
 	Player(Vector2 position) : position(position) {
@@ -48,7 +61,6 @@ struct Player {
 		}
 
 		wandSprite = std::make_unique<Sprite>(Vector2{ 0, 0 }, Vector2{ 14, 44 }, texture, textureTileRect);
-		/*wandSprite->scale = 0.5f;*/
 
 	}
 
@@ -92,9 +104,37 @@ struct Player {
 		invertSprite = IsKeyDown(KEY_D) || IsKeyDown(KEY_S);
 	}
 
+	bool isOutOfTheScreen(Vector2 position) {
+		return position.x < 0 || position.y < 0 || position.x > GetScreenWidth() || position.y > GetScreenHeight();
+	}
+
+	void _updateShots(double deltaTime) {
+		for (auto& shotSprite : shotSprites) {
+			shotSprite->update(deltaTime);
+		}
+
+		// Remove the shots that are out of the screen
+		shotSprites.erase(std::remove_if(shotSprites.begin(), shotSprites.end(), [&](const std::unique_ptr<AnimatedSprite>& shotSprite) {
+			Vector2 screenPosition = { shotSprite->position.x * textureTileRect.width, shotSprite->position.y * textureTileRect.height };
+			return isOutOfTheScreen(screenPosition);
+		}), shotSprites.end());
+
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+			Vector2 mousePosition = GetMousePosition();
+			Vector2 playerPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
+			Vector2 direction = { mousePosition.x - playerPosition.x, mousePosition.y - playerPosition.y };
+			
+			// Normalize the direction vector
+			float speed = 500.0f * deltaTime;
+			Vector2 velocity = Vector2Scale(Vector2Normalize(direction), speed);
+			shotSprites.push_back(std::make_unique<AnimatedSprite>(position, velocity, shotSpritePositions, texture, textureTileRect));
+		}
+	}
+
 	void update(double deltaTime) {
 		_updatePosition(deltaTime);
 		_updateSprite(deltaTime);
+		_updateShots(deltaTime);
 	}
 
 	void draw() {
@@ -115,6 +155,11 @@ struct Player {
 			} else {
 				wandSprite->rotation = -45.0f;
 			}
+		}
+
+		// Draw the shots
+		for (auto& shotSprite : shotSprites) {
+			shotSprite->draw();
 		}
 
 		// Draw the player
