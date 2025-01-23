@@ -24,6 +24,8 @@ struct Player {
 
 	std::vector<std::unique_ptr<Sprite>> sprites;
 
+	std::unique_ptr<Sprite> wandSprite;
+
 	enum class spriteType {
 		POSITION_1,
 		POSITION_2,
@@ -45,21 +47,23 @@ struct Player {
 			sprites.push_back(std::make_unique<Sprite>(screenPosition, tilePosition, texture, textureTileRect));
 		}
 
+		wandSprite = std::make_unique<Sprite>(Vector2{ 0, 0 }, Vector2{ 14, 44 }, texture, textureTileRect);
+		/*wandSprite->scale = 0.5f;*/
+
 	}
 
 	void _updatePosition(double deltaTime) {
 		Vector2 velocity = { 0, 0 };
-		if (IsKeyDown(KEY_RIGHT)) {
+		if (IsKeyDown(KEY_D)) {
 			velocity.x += 1;
-
 		}
-		if (IsKeyDown(KEY_LEFT)) {
+		if (IsKeyDown(KEY_A)) {
 			velocity.x -= 1;
 		}
-		if (IsKeyDown(KEY_UP)) {
+		if (IsKeyDown(KEY_W)) {
 			velocity.y -= 1;
 		}
-		if (IsKeyDown(KEY_DOWN)) {
+		if (IsKeyDown(KEY_S)) {
 			velocity.y += 1;
 		}
 
@@ -71,7 +75,7 @@ struct Player {
 	}
 
 	void _updateSprite(double deltaTime) {
-		bool isMoving = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_DOWN);
+		bool isMoving = IsKeyDown(KEY_D) || IsKeyDown(KEY_A) || IsKeyDown(KEY_W) || IsKeyDown(KEY_S);
 
 		if (!isMoving) {
 			spriteIndex = 0;
@@ -85,7 +89,7 @@ struct Player {
 			spriteIndex = (spriteIndex + 1) % sprites.size();
 		}
 
-		invertSprite = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_DOWN);
+		invertSprite = IsKeyDown(KEY_D) || IsKeyDown(KEY_S);
 	}
 
 	void update(double deltaTime) {
@@ -94,13 +98,35 @@ struct Player {
 	}
 
 	void draw() {
+		// Drawing the player weapon
+		wandSprite->screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
+		if (spriteIndex == 0) {
+			if (invertSprite) {
+				wandSprite->rotation = -45.0f;
+				wandSprite->offset = { 10, 0 };
+			} else {
+				wandSprite->rotation = 45.0f;
+				wandSprite->offset = { -10, 0 };
+			}
+		} else {
+			wandSprite->offset = { 0, 0 };
+			if (invertSprite) {
+				wandSprite->rotation = 45.0f;
+			} else {
+				wandSprite->rotation = -45.0f;
+			}
+		}
+
 		// Draw the player
 		sprites[spriteIndex]->screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
 
-		if (invertSprite)
+		if (invertSprite) {
+			wandSprite->Draw();
 			sprites[spriteIndex]->DrawMirrored();
-		else 
+		} else {
+			wandSprite->DrawMirrored();
 			sprites[spriteIndex]->Draw();
+		}
 	}
 		
 };
