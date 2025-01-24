@@ -3,18 +3,22 @@
 #include <cfloat>
 
 #include "player.hpp"
+#include "enemy.hpp"
 #include "map.hpp"
 
 std::unique_ptr<Map> map;
 std::unique_ptr<Player> player;
+std::unique_ptr<Enemy> enemy;
 
 void setup() {
 	map = std::make_unique<Map>();
 	player = std::make_unique<Player>(Vector2{ 10, 10 });
+	enemy = std::make_unique<Enemy>(Vector2{ 5, 5 });
 }
 
 void update(double deltaTime) {
 	player->update(deltaTime);
+	enemy->update(deltaTime);
 }
 
 void draw() {
@@ -22,6 +26,7 @@ void draw() {
 
 	map->draw();
 	player->draw();
+	enemy->draw();
 }
 
 

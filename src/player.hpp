@@ -84,6 +84,12 @@ struct Player {
 		velocity = Vector2Scale(velocity, speed * deltaTime);
 
 		position = Vector2Add(position, velocity);
+
+		Vector2 screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
+		if (isOutOfTheScreen(screenPosition)) {
+			position.x = position.x < 0 ? GetScreenWidth() / textureTileRect.width : 0;
+			position.y = position.y < 0 ? GetScreenHeight() / textureTileRect.height : 0;
+		}
 	}
 
 	void _updateSprite(double deltaTime) {

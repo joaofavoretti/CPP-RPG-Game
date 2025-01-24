@@ -13,7 +13,7 @@ struct AnimatedSprite {
 	Vector2 velocity;
 
 	int spriteIndex = 0;
-	double animationLength = 0.1f;
+	double animationLength = 0.05f;
 	double animationCounter = 0.0f;
 	
 	Texture2D texture;
