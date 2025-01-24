@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <random>
+#include <iostream>
 
 #include "sprite.hpp"
 
@@ -13,7 +14,11 @@ struct Enemy {
 	Vector2 position;
 	float baseSpeed = 1.0f;
 	Vector2 velocity = { 0, 0 };
-	double probabilityChangeDirection = 0.001;
+	double probabilityChangeDirection = 0.01;
+
+	bool gotHit = false;
+	int baseLife = 10;
+	int life;
 
 	std::string TexturePath = "../assets/tiles.png";
 	Texture2D texture;
@@ -87,6 +92,8 @@ public:
 
 		velocity = GetRandomVelocity();
 
+		life = baseLife;
+
 		for (auto& [key, value] : spritePosition) {
 			Vector2 screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
 			Vector2 tilePosition = value;
@@ -94,6 +101,15 @@ public:
 		}
 	}
 
+	Rectangle GetCollisionRect() {
+		Rectangle rect = { position.x * textureTileRect.width, position.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
+		Vector2 offset = { -textureTileRect.width / 2, -textureTileRect.height / 2 };
+
+		rect.x += offset.x;
+		rect.y += offset.y;
+
+		return rect;
+	}
 
 	void update(double deltaTime) {
 		UpdateVelocity(deltaTime);
@@ -103,7 +119,15 @@ public:
 
 	void draw() {
 		sprites[spriteIndex]->screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
-		sprites[spriteIndex]->Draw();
+		if (gotHit) {
+			sprites[spriteIndex]->DrawColor(RED);
+			gotHit = false;
+		} else {
+			sprites[spriteIndex]->Draw();
+		}
+
+		Rectangle enemyRect = GetCollisionRect();
+		DrawRectangleLinesEx(enemyRect, 1, RED);
 	}
 };
 

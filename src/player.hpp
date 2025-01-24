@@ -11,6 +11,7 @@
 
 #include "sprite.hpp"
 #include "animated_sprite.hpp"
+#include "enemy.hpp"
 
 struct Player {
 	Vector2 position;
@@ -30,6 +31,8 @@ struct Player {
 	std::unique_ptr<Sprite> wandSprite;
 	std::vector<std::unique_ptr<AnimatedSprite>> shotSprites;
 
+	std::vector<Enemy*> enemies;
+
 	enum class spriteType {
 		POSITION_1,
 		POSITION_2,
@@ -48,6 +51,15 @@ struct Player {
 		{45, 25},
 		{46, 25},
 	};
+
+private:
+	void UpdateEnemies(double deltaTime) {
+		enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [&](Enemy* enemy) {
+			return enemy->life <= 0;
+		}), enemies.end());
+	}
+
+public:
 
 	Player(Vector2 position) : position(position) {
 		texture = LoadTexture(TexturePath.c_str());
@@ -135,12 +147,45 @@ struct Player {
 			Vector2 velocity = Vector2Scale(Vector2Normalize(direction), speed);
 			shotSprites.push_back(std::make_unique<AnimatedSprite>(position, velocity, shotSpritePositions, texture, textureTileRect));
 		}
+
+		// Check for collision with enemies
+		if (shotSprites.size() > 0) {
+			for (auto& shotSprite : shotSprites) {
+				Rectangle shotRect = GetShotCollisionRect(shotSprite.get());
+				for (auto& enemy : enemies) {
+					Rectangle enemyRect = enemy->GetCollisionRect();
+					if (CheckCollisionRecs(shotRect, enemyRect)) {
+						enemy->life -= 1;
+						enemy->gotHit = true;
+						shotSprite->position = { -1, -1 };
+					}
+				}
+			}
+		}
 	}
 
 	void update(double deltaTime) {
 		_updatePosition(deltaTime);
 		_updateSprite(deltaTime);
 		_updateShots(deltaTime);
+		UpdateEnemies(deltaTime);
+	}
+
+	void RegisterEnemy(Enemy* enemy) {
+		enemies.push_back(enemy);
+	}
+
+	Rectangle GetShotCollisionRect(AnimatedSprite *shotSprite) {
+		Rectangle rect = { shotSprite->position.x * textureTileRect.width, shotSprite->position.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
+		Rectangle offset = { -textureTileRect.width / 2, -textureTileRect.height / 2 };
+		float scale = 0.5f;
+		
+		rect.x += offset.x * scale;
+		rect.y += offset.y * scale;
+		rect.width *= scale;
+		rect.height *= scale;
+
+		return rect;
 	}
 
 	void draw() {
@@ -166,6 +211,7 @@ struct Player {
 		// Draw the shots
 		for (auto& shotSprite : shotSprites) {
 			shotSprite->draw();
+			DrawRectangleLinesEx(GetShotCollisionRect(shotSprite.get()), 1, RED);
 		}
 
 		// Draw the player

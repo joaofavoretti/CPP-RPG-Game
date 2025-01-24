@@ -15,16 +15,23 @@ struct Sprite {
 		screenPosition(screenPosition), tilePosition(tilePosition), texture(texture), textureTileRect(textureTileRect), scale(scale) {}
 	
 	void Draw() {
-	    Rectangle atlasTileRect = { tilePosition.x * textureTileRect.width, tilePosition.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
-	    Vector2 origin = { textureTileRect.width / 2, textureTileRect.height / 2 };
-	    Rectangle destRect = { screenPosition.x + offset.x, screenPosition.y + offset.y, textureTileRect.width * scale, textureTileRect.height * scale };
-	    DrawTexturePro(texture, atlasTileRect, destRect, origin, rotation, WHITE);
+		Rectangle atlasTileRect = { tilePosition.x * textureTileRect.width, tilePosition.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
+		Vector2 origin = { textureTileRect.width / 2, textureTileRect.height / 2 };
+		Rectangle destRect = { screenPosition.x + offset.x, screenPosition.y + offset.y, textureTileRect.width * scale, textureTileRect.height * scale };
+		DrawTexturePro(texture, atlasTileRect, destRect, origin, rotation, WHITE);
+	}
+
+	void DrawColor(Color color) {
+		Rectangle atlasTileRect = { tilePosition.x * textureTileRect.width, tilePosition.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
+		Vector2 origin = { textureTileRect.width / 2, textureTileRect.height / 2 };
+		Rectangle destRect = { screenPosition.x + offset.x, screenPosition.y + offset.y, textureTileRect.width * scale, textureTileRect.height * scale };
+		DrawTexturePro(texture, atlasTileRect, destRect, origin, rotation, color);
 	}
 
 	void DrawMirrored() {
-	    Rectangle atlasTileRect = { tilePosition.x * textureTileRect.width, tilePosition.y * textureTileRect.height, -textureTileRect.width, textureTileRect.height };
-	    Vector2 origin = { textureTileRect.width / 2, textureTileRect.height / 2 };
-	    Rectangle destRect = { screenPosition.x + offset.x, screenPosition.y + offset.y, textureTileRect.width * scale, textureTileRect.height * scale };
-	    DrawTexturePro(texture, atlasTileRect, destRect, origin, rotation, WHITE);
+		Rectangle atlasTileRect = { tilePosition.x * textureTileRect.width, tilePosition.y * textureTileRect.height, -textureTileRect.width, textureTileRect.height };
+		Vector2 origin = { textureTileRect.width / 2, textureTileRect.height / 2 };
+		Rectangle destRect = { screenPosition.x + offset.x, screenPosition.y + offset.y, textureTileRect.width * scale, textureTileRect.height * scale };
+		DrawTexturePro(texture, atlasTileRect, destRect, origin, rotation, WHITE);
 	}
 };

@@ -14,6 +14,8 @@ void setup() {
 	map = std::make_unique<Map>();
 	player = std::make_unique<Player>(Vector2{ 10, 10 });
 	enemy = std::make_unique<Enemy>(Vector2{ 5, 5 });
+
+	player->RegisterEnemy(enemy.get());
 }
 
 void update(double deltaTime) {
