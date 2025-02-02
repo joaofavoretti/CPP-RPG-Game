@@ -6,29 +6,83 @@
 #include "enemy.hpp"
 #include "map.hpp"
 
+#include "animation.hpp"
+
 std::unique_ptr<Map> map;
 std::unique_ptr<Player> player;
 std::unique_ptr<Enemy> enemy;
 
-void setup() {
-	map = std::make_unique<Map>();
-	player = std::make_unique<Player>(Vector2{ 10, 10 });
-	enemy = std::make_unique<Enemy>(Vector2{ 5, 5 });
+std::unique_ptr<Animation> playerMoveRightAnimation;
+std::unique_ptr<Animation> playerIdleAnimation;
+bool isMovingRight = false;
+Vector2 position = { 0, 64 };
+int speed = 2;
 
-	player->RegisterEnemy(enemy.get());
+void Setup() {
+	/*map = std::make_unique<Map>();*/
+
+	AnimationConfig playerMoveRightConfig = {
+		.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 6,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = true
+	};
+
+	playerMoveRightAnimation = std::make_unique<Animation>(playerMoveRightConfig, position);
+
+
+	AnimationConfig playerIdleConfig = {
+		.texturePath = "../assets/pixel_art/1 Characters/1/D_Idle.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 4,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = true
+	};
+
+	playerIdleAnimation = std::make_unique<Animation>(playerIdleConfig, position);
+
+	/*player = std::make_unique<Player>(Vector2{ 10, 10 });*/
+	/*enemy = std::make_unique<Enemy>(Vector2{ 5, 5 });*/
+	/**/
+	/*player->RegisterEnemy(enemy.get());*/
 }
 
-void update(double deltaTime) {
-	player->update(deltaTime);
-	enemy->update(deltaTime);
+void Update(double deltaTime) {
+	
+	if (IsKeyDown(KEY_RIGHT)) {
+		playerIdleAnimation->Reset();
+		position.x += speed;
+		playerMoveRightAnimation->UpdateScreenPosition(position);
+		playerMoveRightAnimation->Update(deltaTime);
+	}
+	else {
+		playerMoveRightAnimation->Reset();
+		playerIdleAnimation->Update(deltaTime);
+	}
+
+	playerIdleAnimation->UpdateScreenPosition(position);
+
+	/*player->update(deltaTime);*/
+	/*enemy->update(deltaTime);*/
 }
 
-void draw() {
+void Draw() {
 	ClearBackground(RAYWHITE);
 
-	map->draw();
-	player->draw();
-	enemy->draw();
+	/*map->draw();*/
+	if (IsKeyDown(KEY_RIGHT)) {
+		playerMoveRightAnimation->Draw();
+	}
+	else {
+		playerIdleAnimation->Draw();
+	}
+	/*player->draw();*/
+	/*enemy->draw();*/
 }
 
 
@@ -40,15 +94,15 @@ int main() {
 
 	SetTargetFPS(60);
 
-	setup();
+	Setup();
 
 	// Main game loop
 	while (!WindowShouldClose()) {
 		double deltaTime = GetFrameTime();
-		update(deltaTime);
+		Update(deltaTime);
 
 		BeginDrawing();
-		draw();
+		Draw();
 		EndDrawing();
 	}
 
