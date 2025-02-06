@@ -13,9 +13,9 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
 set(MAIN_TARGET main)
 
-set(SOURCES
-    ${SRC_DIR}/main.cpp
-)
+    # If I need later...
+# file(GLOB SOURCES ${SRC_DIR}/*.cpp)
+file(GLOB_RECURSE SOURCES ${SRC_DIR}/*.cpp)
 
 add_subdirectory(${LIB_DIR}/raylib)
 

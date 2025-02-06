@@ -2,15 +2,7 @@
 #include <memory>
 #include <cfloat>
 
-#include "player.hpp"
-#include "enemy.hpp"
-#include "map.hpp"
-
 #include "animation.hpp"
-
-std::unique_ptr<Map> map;
-std::unique_ptr<Player> player;
-std::unique_ptr<Enemy> enemy;
 
 std::unique_ptr<Animation> playerMoveRightAnimation;
 std::unique_ptr<Animation> playerIdleAnimation;
@@ -19,8 +11,6 @@ Vector2 position = { 0, 64 };
 int speed = 2;
 
 void Setup() {
-	/*map = std::make_unique<Map>();*/
-
 	AnimationConfig playerMoveRightConfig = {
 		.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
 		.textureTileSize = { 32, 32 },
@@ -45,15 +35,9 @@ void Setup() {
 	};
 
 	playerIdleAnimation = std::make_unique<Animation>(playerIdleConfig, position);
-
-	/*player = std::make_unique<Player>(Vector2{ 10, 10 });*/
-	/*enemy = std::make_unique<Enemy>(Vector2{ 5, 5 });*/
-	/**/
-	/*player->RegisterEnemy(enemy.get());*/
 }
 
 void Update(double deltaTime) {
-	
 	if (IsKeyDown(KEY_RIGHT)) {
 		playerIdleAnimation->Reset();
 		position.x += speed;
@@ -66,23 +50,17 @@ void Update(double deltaTime) {
 	}
 
 	playerIdleAnimation->UpdateScreenPosition(position);
-
-	/*player->update(deltaTime);*/
-	/*enemy->update(deltaTime);*/
 }
 
 void Draw() {
 	ClearBackground(RAYWHITE);
 
-	/*map->draw();*/
 	if (IsKeyDown(KEY_RIGHT)) {
 		playerMoveRightAnimation->Draw();
 	}
 	else {
 		playerIdleAnimation->Draw();
 	}
-	/*player->draw();*/
-	/*enemy->draw();*/
 }
 
 
@@ -96,7 +74,6 @@ int main() {
 
 	Setup();
 
-	// Main game loop
 	while (!WindowShouldClose()) {
 		double deltaTime = GetFrameTime();
 		Update(deltaTime);
@@ -106,6 +83,5 @@ int main() {
 		EndDrawing();
 	}
 
-	// De-Initialization
 	CloseWindow();
 }
