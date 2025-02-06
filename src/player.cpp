@@ -1,10 +1,10 @@
-#include <iostream>
-
 #include "player.hpp"
 
 Player::Player(Vector2 position): position(position) {
 	SetupAnimations();
 
+	velocity = { 0.0f, 0.0f };
+	
 	animationSystem = std::make_unique<AnimationSystem>();
 
 	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_RIGHT);
@@ -18,25 +18,34 @@ Player::Player(Vector2 position): position(position) {
 }
 
 void Player::Update(double deltaTime) {
-	if (IsKeyDown(KEY_RIGHT)) {
-		position.x += speed;
-		lastMoveAnimation = PlayerAnimationEnum::MOVE_RIGHT;
-		animationSystem->Update(PlayerAnimationEnum::MOVE_RIGHT, deltaTime);
-	} else if (IsKeyDown(KEY_LEFT)) {
-		position.x -= speed;
-		lastMoveAnimation = PlayerAnimationEnum::MOVE_LEFT;
-		animationSystem->Update(PlayerAnimationEnum::MOVE_LEFT, deltaTime);
-	} else if (IsKeyDown(KEY_UP)) {
-		position.y -= speed;
+	if (IsKeyDown(KEY_UP)) {
+		velocity.y -= speed;
 		lastMoveAnimation = PlayerAnimationEnum::MOVE_UP;
-		animationSystem->Update(PlayerAnimationEnum::MOVE_UP, deltaTime);
-	} else if (IsKeyDown(KEY_DOWN)) {
-		position.y += speed;
-		lastMoveAnimation = PlayerAnimationEnum::MOVE_DOWN;
-		animationSystem->Update(PlayerAnimationEnum::MOVE_DOWN, deltaTime);
-	} else {
-		animationSystem->Update(idleAnimations[lastMoveAnimation], deltaTime);
 	}
+	if (IsKeyDown(KEY_DOWN)) {
+		velocity.y += speed;
+		lastMoveAnimation = PlayerAnimationEnum::MOVE_DOWN;
+	}
+	if (IsKeyDown(KEY_RIGHT)) {
+		velocity.x += speed;
+		lastMoveAnimation = PlayerAnimationEnum::MOVE_RIGHT;
+	}
+	if (IsKeyDown(KEY_LEFT)) {
+		velocity.x -= speed;
+		lastMoveAnimation = PlayerAnimationEnum::MOVE_LEFT;
+	}
+
+	// If the magnitude of velocity is 0. Show Idle animation
+	if (Vector2Length(velocity) == 0) {
+		animationSystem->Update(idleAnimations[lastMoveAnimation], deltaTime);
+	} else {
+		animationSystem->Update(lastMoveAnimation, deltaTime);
+	}
+
+	velocity = Vector2Scale(Vector2Scale(Vector2Normalize(velocity), speed), deltaTime);
+	position = Vector2Add(position, velocity);
+	velocity = { 0.0f, 0.0f };
+
 	animationSystem->SetPosition(position);
 }
 

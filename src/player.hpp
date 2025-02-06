@@ -25,7 +25,8 @@ enum PlayerAnimationEnum {
 struct Player {
 private:
 	Vector2 position;
-	float speed = 2.0f;
+	Vector2 velocity;
+	float speed = 130.0f;
 
 	std::unique_ptr<std::map<int, std::unique_ptr<Animation>>> animations;
 	std::unique_ptr<AnimationSystem> animationSystem;
