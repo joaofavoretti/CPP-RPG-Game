@@ -3,14 +3,20 @@
 #include <cfloat>
 
 #include "animation.hpp"
+#include "animation_system.hpp"
 
 std::unique_ptr<Animation> playerMoveRightAnimation;
 std::unique_ptr<Animation> playerIdleAnimation;
-bool isMovingRight = false;
+std::unique_ptr<AnimationSystem> animationSystem;
 Vector2 position = { 0, 64 };
 int speed = 2;
 
-void Setup() {
+enum PlayerAnimationEnum {
+	MOVE_RIGHT = 0,
+	IDLE
+};
+
+void SetupAnimations() {
 	AnimationConfig playerMoveRightConfig = {
 		.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
 		.textureTileSize = { 32, 32 },
@@ -37,30 +43,31 @@ void Setup() {
 	playerIdleAnimation = std::make_unique<Animation>(playerIdleConfig, position);
 }
 
+void Setup() {
+	SetupAnimations();
+
+	animationSystem = std::make_unique<AnimationSystem>();
+	animationSystem->RegisterAnimation(PlayerAnimationEnum::MOVE_RIGHT, playerMoveRightAnimation.get());
+	animationSystem->RegisterAnimation(PlayerAnimationEnum::IDLE, playerIdleAnimation.get());
+}
+
 void Update(double deltaTime) {
 	if (IsKeyDown(KEY_RIGHT)) {
-		playerIdleAnimation->Reset();
+		// Update player position
 		position.x += speed;
-		playerMoveRightAnimation->UpdateScreenPosition(position);
-		playerMoveRightAnimation->Update(deltaTime);
+
+		animationSystem->Update(PlayerAnimationEnum::MOVE_RIGHT, deltaTime);
 	}
 	else {
-		playerMoveRightAnimation->Reset();
-		playerIdleAnimation->Update(deltaTime);
+		animationSystem->Update(PlayerAnimationEnum::IDLE, deltaTime);
 	}
-
-	playerIdleAnimation->UpdateScreenPosition(position);
+	animationSystem->SetPosition(position);
 }
 
 void Draw() {
 	ClearBackground(RAYWHITE);
 
-	if (IsKeyDown(KEY_RIGHT)) {
-		playerMoveRightAnimation->Draw();
-	}
-	else {
-		playerIdleAnimation->Draw();
-	}
+	animationSystem->Draw();
 }
 
 
