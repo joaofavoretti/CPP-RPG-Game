@@ -11,6 +11,7 @@ struct AnimationConfig {
 	float frameSpeed;
 	float scale;
 	bool loop = false;
+	bool flip = false;
 };
 
 struct Animation {
@@ -22,6 +23,7 @@ struct Animation {
 	int currentFrame = 0;
 	float frameSpeed;
 	bool loop;
+	bool flip;
 	float scale;
 	Vector2 screenPosition;
 

@@ -10,6 +10,7 @@
 
 enum PlayerAnimationEnum {
 	MOVE_RIGHT = 0,
+	MOVE_LEFT,
 	IDLE
 };
 
@@ -32,7 +33,19 @@ private:
 			.numberOfFrames = 6,
 			.frameSpeed = 0.1f,
 			.scale = 2.0f,
-			.loop = true
+			.loop = true,
+			.flip = false,
+		}, position)));
+
+		animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_LEFT, std::make_unique<Animation>((AnimationConfig){
+			.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
+			.textureTileSize = { 32, 32 },
+			.texturePosition = { 0, 0 },
+			.numberOfFrames = 6,
+			.frameSpeed = 0.1f,
+			.scale = 2.0f,
+			.loop = true,
+			.flip = true,
 		}, position)));
 
 		animations->insert(std::make_pair(PlayerAnimationEnum::IDLE, std::make_unique<Animation>((AnimationConfig){
@@ -42,8 +55,10 @@ private:
 			.numberOfFrames = 4,
 			.frameSpeed = 0.1f,
 			.scale = 2.0f,
-			.loop = true
+			.loop = true,
+			.flip = false,
 		}, position)));	
+
 	}
 
 public:
@@ -53,6 +68,7 @@ public:
 		animationSystem = std::make_unique<AnimationSystem>();
 
 		REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_RIGHT);
+		REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_LEFT);
 		REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE);
 	}
 
@@ -61,6 +77,9 @@ public:
 			position.x += speed;
 			
 			animationSystem->Update(PlayerAnimationEnum::MOVE_RIGHT, deltaTime);
+		} else if (IsKeyDown(KEY_LEFT)) {
+			position.x -= speed;
+			animationSystem->Update(PlayerAnimationEnum::MOVE_LEFT, deltaTime);
 		}
 		else {
 			animationSystem->Update(PlayerAnimationEnum::IDLE, deltaTime);

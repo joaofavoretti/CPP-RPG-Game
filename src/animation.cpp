@@ -7,6 +7,7 @@ Animation::Animation(AnimationConfig config, Vector2 screenPosition): screenPosi
 	numberOfFrames = config.numberOfFrames;
 	frameSpeed = config.frameSpeed;
 	scale = config.scale;
+	flip = config.flip;
 	loop = config.loop;
 }
 
@@ -27,8 +28,12 @@ void Animation::Update(double deltaTime) {
 }
 
 void Animation::Draw() {
-	
 	Rectangle sourceRect = { (texturePosition.x + currentFrame) * textureTileSize.x, texturePosition.y * textureTileSize.y, textureTileSize.x, textureTileSize.y };
+
+	if (flip) {
+		sourceRect.width *= -1;
+	}
+
 	Rectangle destRect = { screenPosition.x, screenPosition.y, textureTileSize.x * scale, textureTileSize.y  * scale};
 	Vector2 origin = { 0.0f, 0.0f };
 	
