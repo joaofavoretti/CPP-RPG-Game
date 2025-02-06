@@ -25,6 +25,12 @@ void AnimationSystem::Update(int animationId, double deltaTime) {
 	currentAnimation->Update(deltaTime);
 }
 
+void AnimationSystem::Update(double deltaTime) {
+	if (currentAnimation) {
+		currentAnimation->Update(deltaTime);
+	}
+}
+
 void AnimationSystem::Draw() {
 	if (currentAnimation) {
 		currentAnimation->Draw();
@@ -39,4 +45,8 @@ int AnimationSystem::GetCurrentAnimationId() {
 	}
 
 	return -1;
+}
+
+bool AnimationSystem::IsPerformingAnimation() {
+	return currentAnimation != nullptr && !currentAnimation->IsFinished();
 }

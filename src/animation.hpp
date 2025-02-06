@@ -36,4 +36,6 @@ struct Animation {
 	void Update(double deltaTime);
 
 	void Draw();
+
+	bool IsFinished();
 };

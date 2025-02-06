@@ -15,9 +15,18 @@ Player::Player(Vector2 position): position(position) {
 	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_LEFT);
 	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_UP);
 	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_DOWN);
+	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_RIGHT);
+	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_LEFT);
+	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_UP);
+	REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_DOWN);
 }
 
 void Player::Update(double deltaTime) {
+	if (animationSystem->IsPerformingAnimation()) {
+		animationSystem->Update(deltaTime);
+		return;
+	}
+
 	if (IsKeyDown(KEY_UP)) {
 		velocity.y -= speed;
 		lastMoveAnimation = PlayerAnimationEnum::MOVE_UP;
@@ -42,6 +51,10 @@ void Player::Update(double deltaTime) {
 		animationSystem->Update(lastMoveAnimation, deltaTime);
 	}
 
+	if (IsKeyDown(KEY_SPACE)) {
+		animationSystem->Update(attackAnimations[lastMoveAnimation], deltaTime);
+	}
+
 	velocity = Vector2Scale(Vector2Scale(Vector2Normalize(velocity), speed), deltaTime);
 	position = Vector2Add(position, velocity);
 	velocity = { 0.0f, 0.0f };
@@ -57,18 +70,7 @@ void Player::SetupAnimations() {
 	animations = std::make_unique<std::map<int, std::unique_ptr<Animation>>>();
 
 	animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_RIGHT, std::make_unique<Animation>((AnimationConfig){
-		.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
-		.textureTileSize = { 32, 32 },
-		.texturePosition = { 0, 0 },
-		.numberOfFrames = 6,
-		.frameSpeed = 0.1f,
-		.scale = 2.0f,
-		.loop = true,
-		.flip = false,
-	}, position)));
-
-	animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_LEFT, std::make_unique<Animation>((AnimationConfig){
-		.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
+		.texturePath = "../assets/pixel_art/1 Characters/1/S_Walk.png",
 		.textureTileSize = { 32, 32 },
 		.texturePosition = { 0, 0 },
 		.numberOfFrames = 6,
@@ -76,6 +78,17 @@ void Player::SetupAnimations() {
 		.scale = 2.0f,
 		.loop = true,
 		.flip = true,
+	}, position)));
+
+	animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_LEFT, std::make_unique<Animation>((AnimationConfig){
+		.texturePath = "../assets/pixel_art/1 Characters/1/S_Walk.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 6,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = true,
+		.flip = false,
 	}, position)));
 
 	animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_UP, std::make_unique<Animation>((AnimationConfig){
@@ -90,7 +103,7 @@ void Player::SetupAnimations() {
 	}, position)));
 
 	animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_DOWN, std::make_unique<Animation>((AnimationConfig){
-		.texturePath = "../assets/pixel_art/1 Characters/1/S_Walk.png",
+		.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
 		.textureTileSize = { 32, 32 },
 		.texturePosition = { 0, 0 },
 		.numberOfFrames = 6,
@@ -101,18 +114,7 @@ void Player::SetupAnimations() {
 	}, position)));
 
 	animations->insert(std::make_pair(PlayerAnimationEnum::IDLE_RIGHT, std::make_unique<Animation>((AnimationConfig){
-		.texturePath = "../assets/pixel_art/1 Characters/1/D_Idle.png",
-		.textureTileSize = { 32, 32 },
-		.texturePosition = { 0, 0 },
-		.numberOfFrames = 4,
-		.frameSpeed = 0.1f,
-		.scale = 2.0f,
-		.loop = true,
-		.flip = false,
-	}, position)));	
-
-	animations->insert(std::make_pair(PlayerAnimationEnum::IDLE_LEFT, std::make_unique<Animation>((AnimationConfig){
-		.texturePath = "../assets/pixel_art/1 Characters/1/D_Idle.png",
+		.texturePath = "../assets/pixel_art/1 Characters/1/S_Idle.png",
 		.textureTileSize = { 32, 32 },
 		.texturePosition = { 0, 0 },
 		.numberOfFrames = 4,
@@ -120,6 +122,17 @@ void Player::SetupAnimations() {
 		.scale = 2.0f,
 		.loop = true,
 		.flip = true,
+	}, position)));	
+
+	animations->insert(std::make_pair(PlayerAnimationEnum::IDLE_LEFT, std::make_unique<Animation>((AnimationConfig){
+		.texturePath = "../assets/pixel_art/1 Characters/1/S_Idle.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 4,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = true,
+		.flip = false,
 	}, position)));	
 
 	animations->insert(std::make_pair(PlayerAnimationEnum::IDLE_UP, std::make_unique<Animation>((AnimationConfig){
@@ -134,13 +147,57 @@ void Player::SetupAnimations() {
 	}, position)));
 
 	animations->insert(std::make_pair(PlayerAnimationEnum::IDLE_DOWN, std::make_unique<Animation>((AnimationConfig){
-		.texturePath = "../assets/pixel_art/1 Characters/1/S_Idle.png",
+		.texturePath = "../assets/pixel_art/1 Characters/1/D_Idle.png",
 		.textureTileSize = { 32, 32 },
 		.texturePosition = { 0, 0 },
 		.numberOfFrames = 4,
 		.frameSpeed = 0.1f,
 		.scale = 2.0f,
 		.loop = true,
+		.flip = false,
+	}, position)));
+
+	animations->insert(std::make_pair(PlayerAnimationEnum::ATTACK_RIGHT, std::make_unique<Animation>((AnimationConfig){
+		.texturePath = "../assets/pixel_art/1 Characters/1/S_Attack.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 4,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = false,
+		.flip = true,
+	}, position)));
+
+	animations->insert(std::make_pair(PlayerAnimationEnum::ATTACK_LEFT, std::make_unique<Animation>((AnimationConfig){
+		.texturePath = "../assets/pixel_art/1 Characters/1/S_Attack.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 4,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = false,
+		.flip = false,
+	}, position)));
+
+	animations->insert(std::make_pair(PlayerAnimationEnum::ATTACK_UP, std::make_unique<Animation>((AnimationConfig){
+		.texturePath = "../assets/pixel_art/1 Characters/1/U_Attack.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 4,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = false,
+		.flip = false,
+	}, position)));
+
+	animations->insert(std::make_pair(PlayerAnimationEnum::ATTACK_DOWN, std::make_unique<Animation>((AnimationConfig){
+		.texturePath = "../assets/pixel_art/1 Characters/1/D_Attack.png",
+		.textureTileSize = { 32, 32 },
+		.texturePosition = { 0, 0 },
+		.numberOfFrames = 4,
+		.frameSpeed = 0.1f,
+		.scale = 2.0f,
+		.loop = false,
 		.flip = false,
 	}, position)));
 

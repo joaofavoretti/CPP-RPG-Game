@@ -39,3 +39,7 @@ void Animation::Draw() {
 	
 	DrawTexturePro(texture, sourceRect, destRect, origin, 0.0f, WHITE);
 }
+
+bool Animation::IsFinished() {
+	return loop || currentFrame == numberOfFrames - 1;
+}

@@ -14,8 +14,10 @@ private:
 
 public:
 	int GetCurrentAnimationId();
+	bool IsPerformingAnimation();
 	void RegisterAnimation(int animationId, Animation *animation);
 	void SetPosition(Vector2 position);
 	void Update(int animationId, double deltaTime);
+	void Update(double deltaTime);
 	void Draw();
 };
