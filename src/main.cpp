@@ -22,7 +22,6 @@ void Draw() {
 	player->Draw();
 }
 
-
 int main() {
 	const int screenWidth = 800;
 	const int screenHeight = 450;

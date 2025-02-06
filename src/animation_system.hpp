@@ -13,6 +13,7 @@ private:
 
 
 public:
+	int GetCurrentAnimationId();
 	void RegisterAnimation(int animationId, Animation *animation);
 	void SetPosition(Vector2 position);
 	void Update(int animationId, double deltaTime);

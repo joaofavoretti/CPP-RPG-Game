@@ -30,3 +30,13 @@ void AnimationSystem::Draw() {
 		currentAnimation->Draw();
 	}
 }
+
+int AnimationSystem::GetCurrentAnimationId() {
+	for (auto const& [key, val] : animations) {
+		if (val == currentAnimation) {
+			return key;
+		}
+	}
+
+	return -1;
+}
