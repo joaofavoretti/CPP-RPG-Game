@@ -2,228 +2,73 @@
 
 #include <raylib.h>
 #include <raymath.h>
-#include <string>
 #include <map>
-#include <vector>
 #include <memory>
-#include <algorithm>
-#include <iostream>
 
-#include "sprite.hpp"
-#include "animated_sprite.hpp"
-#include "enemy.hpp"
+#include "animation.hpp"
+#include "animation_system.hpp"
+
+enum PlayerAnimationEnum {
+	MOVE_RIGHT = 0,
+	IDLE
+};
+
+#define REGISTER_ANIMATION(animationSystem, animationId) animationSystem->RegisterAnimation(animationId, animations->at(animationId).get())
 
 struct Player {
-	Vector2 position;
-	float speed = 5.0f;
-
-	bool invertSprite = false;
-	int spriteIndex = 0;
-	double spriteIndexLength = 0.1f;
-	double spriteIndexCounter = 0.0f;
-	
-	std::string TexturePath = "../assets/tiles.png";
-	Texture2D texture;
-	Rectangle textureTileRect;
-
-	std::vector<std::unique_ptr<Sprite>> sprites;
-
-	std::unique_ptr<Sprite> wandSprite;
-	std::vector<std::unique_ptr<AnimatedSprite>> shotSprites;
-
-	std::vector<Enemy*> enemies;
-
-	enum class spriteType {
-		POSITION_1,
-		POSITION_2,
-	};
-
-	std::map<spriteType, Vector2> spritePosition = {
-		{spriteType::POSITION_1, Vector2{4, 74}},
-		{spriteType::POSITION_2, Vector2{5, 74}},
-	};
-
-	std::vector<Vector2> shotSpritePositions = {
-		{41, 25},
-		{42, 25},
-		{43, 25},
-		{44, 25},
-		{45, 25},
-		{46, 25},
-	};
-
 private:
-	void UpdateEnemies(double deltaTime) {
-		enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [&](Enemy* enemy) {
-			return enemy->life <= 0;
-		}), enemies.end());
+	Vector2 position;
+	float speed = 2.0f;
+	std::unique_ptr<std::map<int, std::unique_ptr<Animation>>> animations;
+	std::unique_ptr<AnimationSystem> animationSystem;
+
+	void SetupAnimations() {
+		animations = std::make_unique<std::map<int, std::unique_ptr<Animation>>>();
+
+		animations->insert(std::make_pair(PlayerAnimationEnum::MOVE_RIGHT, std::make_unique<Animation>((AnimationConfig){
+			.texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
+			.textureTileSize = { 32, 32 },
+			.texturePosition = { 0, 0 },
+			.numberOfFrames = 6,
+			.frameSpeed = 0.1f,
+			.scale = 2.0f,
+			.loop = true
+		}, position)));
+
+		animations->insert(std::make_pair(PlayerAnimationEnum::IDLE, std::make_unique<Animation>((AnimationConfig){
+			.texturePath = "../assets/pixel_art/1 Characters/1/D_Idle.png",
+			.textureTileSize = { 32, 32 },
+			.texturePosition = { 0, 0 },
+			.numberOfFrames = 4,
+			.frameSpeed = 0.1f,
+			.scale = 2.0f,
+			.loop = true
+		}, position)));	
 	}
 
 public:
+	Player(Vector2 position): position(position) {
+		SetupAnimations();
 
-	Player(Vector2 position) : position(position) {
-		texture = LoadTexture(TexturePath.c_str());
-		textureTileRect = { 0, 0, 32, 32 };
+		animationSystem = std::make_unique<AnimationSystem>();
 
-		// Iterate through the spritePosition map
-		for (auto& [key, value] : spritePosition) {
-			Vector2 screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
-			Vector2 tilePosition = value;
-			sprites.push_back(std::make_unique<Sprite>(screenPosition, tilePosition, texture, textureTileRect));
-		}
-
-		wandSprite = std::make_unique<Sprite>(Vector2{ 0, 0 }, Vector2{ 14, 44 }, texture, textureTileRect);
-
+		REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_RIGHT);
+		REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE);
 	}
 
-	void _updatePosition(double deltaTime) {
-		Vector2 velocity = { 0, 0 };
-		if (IsKeyDown(KEY_D)) {
-			velocity.x += 1;
-		}
-		if (IsKeyDown(KEY_A)) {
-			velocity.x -= 1;
-		}
-		if (IsKeyDown(KEY_W)) {
-			velocity.y -= 1;
-		}
-		if (IsKeyDown(KEY_S)) {
-			velocity.y += 1;
-		}
-
-		// Update the player position
-		velocity = Vector2Normalize(velocity);
-		velocity = Vector2Scale(velocity, speed * deltaTime);
-
-		position = Vector2Add(position, velocity);
-
-		Vector2 screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
-		if (isOutOfTheScreen(screenPosition)) {
-			position.x = position.x < 0 ? GetScreenWidth() / textureTileRect.width : 0;
-			position.y = position.y < 0 ? GetScreenHeight() / textureTileRect.height : 0;
-		}
-	}
-
-	void _updateSprite(double deltaTime) {
-		bool isMoving = IsKeyDown(KEY_D) || IsKeyDown(KEY_A) || IsKeyDown(KEY_W) || IsKeyDown(KEY_S);
-
-		if (!isMoving) {
-			spriteIndex = 0;
-			spriteIndexCounter = 0.0f;
-			return;
-		}
-
-		spriteIndexCounter += deltaTime;
-		if (spriteIndexCounter >= spriteIndexLength) {
-			spriteIndexCounter = 0.0f;
-			spriteIndex = (spriteIndex + 1) % sprites.size();
-		}
-
-		invertSprite = IsKeyDown(KEY_D) || IsKeyDown(KEY_S);
-	}
-
-	bool isOutOfTheScreen(Vector2 position) {
-		return position.x < 0 || position.y < 0 || position.x > GetScreenWidth() || position.y > GetScreenHeight();
-	}
-
-	void _updateShots(double deltaTime) {
-		for (auto& shotSprite : shotSprites) {
-			shotSprite->update(deltaTime);
-		}
-
-		// Remove the shots that are out of the screen
-		shotSprites.erase(std::remove_if(shotSprites.begin(), shotSprites.end(), [&](const std::unique_ptr<AnimatedSprite>& shotSprite) {
-			Vector2 screenPosition = { shotSprite->position.x * textureTileRect.width, shotSprite->position.y * textureTileRect.height };
-			return isOutOfTheScreen(screenPosition);
-		}), shotSprites.end());
-
-		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-			Vector2 mousePosition = GetMousePosition();
-			Vector2 playerPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
-			Vector2 direction = { mousePosition.x - playerPosition.x, mousePosition.y - playerPosition.y };
+	void Update(double deltaTime) {
+		if (IsKeyDown(KEY_RIGHT)) {
+			position.x += speed;
 			
-			// Normalize the direction vector
-			float speed = 500.0f * deltaTime;
-			Vector2 velocity = Vector2Scale(Vector2Normalize(direction), speed);
-			shotSprites.push_back(std::make_unique<AnimatedSprite>(position, velocity, shotSpritePositions, texture, textureTileRect));
+			animationSystem->Update(PlayerAnimationEnum::MOVE_RIGHT, deltaTime);
 		}
-
-		// Check for collision with enemies
-		if (shotSprites.size() > 0) {
-			for (auto& shotSprite : shotSprites) {
-				Rectangle shotRect = GetShotCollisionRect(shotSprite.get());
-				for (auto& enemy : enemies) {
-					Rectangle enemyRect = enemy->GetCollisionRect();
-					if (CheckCollisionRecs(shotRect, enemyRect)) {
-						enemy->life -= 1;
-						enemy->gotHit = true;
-						shotSprite->position = { -1, -1 };
-					}
-				}
-			}
+		else {
+			animationSystem->Update(PlayerAnimationEnum::IDLE, deltaTime);
 		}
+		animationSystem->SetPosition(position);
 	}
 
-	void update(double deltaTime) {
-		_updatePosition(deltaTime);
-		_updateSprite(deltaTime);
-		_updateShots(deltaTime);
-		UpdateEnemies(deltaTime);
+	void Draw() {
+		animationSystem->Draw();
 	}
-
-	void RegisterEnemy(Enemy* enemy) {
-		enemies.push_back(enemy);
-	}
-
-	Rectangle GetShotCollisionRect(AnimatedSprite *shotSprite) {
-		Rectangle rect = { shotSprite->position.x * textureTileRect.width, shotSprite->position.y * textureTileRect.height, textureTileRect.width, textureTileRect.height };
-		Rectangle offset = { -textureTileRect.width / 2, -textureTileRect.height / 2 };
-		float scale = 0.5f;
-		
-		rect.x += offset.x * scale;
-		rect.y += offset.y * scale;
-		rect.width *= scale;
-		rect.height *= scale;
-
-		return rect;
-	}
-
-	void draw() {
-		// Drawing the player weapon
-		wandSprite->screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
-		if (spriteIndex == 0) {
-			if (invertSprite) {
-				wandSprite->rotation = -45.0f;
-				wandSprite->offset = { 10, 0 };
-			} else {
-				wandSprite->rotation = 45.0f;
-				wandSprite->offset = { -10, 0 };
-			}
-		} else {
-			wandSprite->offset = { 0, 0 };
-			if (invertSprite) {
-				wandSprite->rotation = 45.0f;
-			} else {
-				wandSprite->rotation = -45.0f;
-			}
-		}
-
-		// Draw the shots
-		for (auto& shotSprite : shotSprites) {
-			shotSprite->draw();
-			DrawRectangleLinesEx(GetShotCollisionRect(shotSprite.get()), 1, RED);
-		}
-
-		// Draw the player
-		sprites[spriteIndex]->screenPosition = { position.x * textureTileRect.width, position.y * textureTileRect.height };
-
-		if (invertSprite) {
-			wandSprite->Draw();
-			sprites[spriteIndex]->DrawMirrored();
-		} else {
-			wandSprite->DrawMirrored();
-			sprites[spriteIndex]->Draw();
-		}
-	}
-		
 };
