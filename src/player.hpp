@@ -52,6 +52,8 @@ private:
 	void SetupAnimations();
 public:
 	Player(Vector2 position);
+	Vector2 GetPosition();
+	PlayerAnimationEnum GetLastMoveAnimation();
 	void Update(double deltaTime);
 	void Draw();
 };

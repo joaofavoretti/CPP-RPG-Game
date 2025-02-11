@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "player.hpp"
 
 Player::Player(Vector2 position) : position(position) {
@@ -63,6 +65,10 @@ void Player::Update(double deltaTime) {
   animationSystem->SetPosition(position);
 }
 
+Vector2 Player::GetPosition() { return position; }
+
+PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
+
 void Player::Draw() { animationSystem->Draw(); }
 
 void Player::SetupAnimations() {
@@ -80,8 +86,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = true,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::MOVE_LEFT,
@@ -95,8 +100,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::MOVE_UP,
@@ -110,8 +114,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::MOVE_DOWN,
@@ -125,8 +128,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::IDLE_RIGHT,
@@ -140,8 +142,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = true,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::IDLE_LEFT,
@@ -155,8 +156,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::IDLE_UP,
@@ -170,8 +170,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::IDLE_DOWN,
@@ -185,8 +184,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = true,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::ATTACK_RIGHT,
@@ -200,8 +198,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = false,
               .flip = true,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::ATTACK_LEFT,
@@ -215,8 +212,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = false,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::ATTACK_UP,
@@ -230,8 +226,7 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = false,
               .flip = false,
-          },
-          position)));
+          })));
 
   animations->insert(std::make_pair(
       PlayerAnimationEnum::ATTACK_DOWN,
@@ -245,6 +240,5 @@ void Player::SetupAnimations() {
               .scale = 2.0f,
               .loop = false,
               .flip = false,
-          },
-          position)));
+          })));
 }

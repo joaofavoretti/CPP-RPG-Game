@@ -1,6 +1,6 @@
 #include "animation.hpp"
 
-Animation::Animation(AnimationConfig config, Vector2 screenPosition): screenPosition(screenPosition) {
+Animation::Animation(AnimationConfig config) {
 	texture = LoadTexture(config.texturePath.c_str());
 	textureTileSize = config.textureTileSize;
 	texturePosition = config.texturePosition;
@@ -13,6 +13,10 @@ Animation::Animation(AnimationConfig config, Vector2 screenPosition): screenPosi
 
 void Animation::UpdateScreenPosition(Vector2 screenPosition) {
 	this->screenPosition = screenPosition;
+}
+
+void Animation::UpdateAngle(float angle) {
+	this->angle = angle;
 }
 
 void Animation::Reset() {
@@ -34,10 +38,11 @@ void Animation::Draw() {
 		sourceRect.width *= -1;
 	}
 
-	Rectangle destRect = { screenPosition.x, screenPosition.y, textureTileSize.x * scale, textureTileSize.y  * scale};
+	Rectangle destRect = { screenPosition.x + offset.x, screenPosition.y + offset.y, textureTileSize.x * scale, textureTileSize.y  * scale};
 	Vector2 origin = { 0.0f, 0.0f };
 	
-	DrawTexturePro(texture, sourceRect, destRect, origin, 0.0f, WHITE);
+	float rotation = angle * RAD2DEG;
+	DrawTexturePro(texture, sourceRect, destRect, origin, rotation, WHITE);
 }
 
 bool Animation::IsFinished() {

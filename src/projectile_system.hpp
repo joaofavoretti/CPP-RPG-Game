@@ -2,42 +2,48 @@
 
 #include <raylib.h>
 #include <raymath.h>
-#include <memory>
 #include <vector>
+#include <algorithm>
 
 #include "projectile.hpp"
-#include "animation.hpp"
 
 struct ProjectileSystem {
 	std::unique_ptr<Animation> baseAnimation;
-	std::vector<Projectile> projectiles;
+	std::vector<std::unique_ptr<Projectile>> projectiles;
 
 private:
-	bool IsOutOfBounds(Projectile projectile) {
-		return projectile.position.x < 0 || projectile.position.x > GetScreenWidth() || projectile.position.y < 0 || projectile.position.y > GetScreenHeight();
+	bool IsOutOfBounds(Projectile& projectile) {
+		return projectile.GetPosition().x < 0 || projectile.GetPosition().x > GetScreenWidth() || projectile.GetPosition().y < 0 || projectile.GetPosition().y > GetScreenHeight();
 	}
 
 public:
+	
 	ProjectileSystem(std::unique_ptr<Animation> baseAnimation) : baseAnimation(std::move(baseAnimation)) {}
 
+	void SetOffset(Vector2 offset) {
+		baseAnimation->offset = offset;
+	}
 
-	void Add(Projectile projectile) {
-		projectiles.push_back(projectile);
+	void Add(ProjectileConfig projectileConfig) {
+		std::unique_ptr<Animation> animation = std::make_unique<Animation>(*baseAnimation);
+		animation->UpdateAngle(projectileConfig.angle);
+		projectiles.push_back(std::make_unique<Projectile>(projectileConfig, std::move(animation)));
 	}
 
 	void Update(double deltaTime) {
-		// Update projectile positions
 		for (auto& projectile : projectiles) {
-			projectile.position = Vector2Add(projectile.position, Vector2Scale(Vector2{ cosf(projectile.angle), sinf(projectile.angle) }, projectile.speed));
+			projectile->Update(deltaTime);
 		}
 
-		// Remove out of bounds projectiles
-		projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(), [&](Projectile projectile) {
-			return IsOutOfBounds(projectile);
+		projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(), [&](std::unique_ptr<Projectile>& projectile) {
+			return IsOutOfBounds(*projectile);
 		}), projectiles.end());
 	}
 
 	void Draw() {
+		for (auto& projectile : projectiles) {
+			projectile->Draw();
+		}
 	}
 };
 

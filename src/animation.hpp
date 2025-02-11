@@ -15,11 +15,15 @@ struct Animation {
 	bool loop;
 	bool flip;
 	float scale;
-	Vector2 screenPosition;
+	Vector2 screenPosition = { 0, 0 };
+	Vector2 offset = { 0, 0 };
+	float angle = 0.0f;
 
-	Animation(AnimationConfig config, Vector2 screenPosition);
+	Animation(AnimationConfig config);
 
 	void UpdateScreenPosition(Vector2 screenPosition);
+	
+	void UpdateAngle(float angle);
 
 	void Reset();
 
