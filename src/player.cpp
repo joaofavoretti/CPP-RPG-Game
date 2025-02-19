@@ -4,6 +4,7 @@
 
 Player::Player(Vector2 position) : position(position) {
   SetupAnimations();
+  SetupProjectileSystem();
 
   velocity = {0.0f, 0.0f};
 
@@ -49,6 +50,8 @@ void Player::UpdateProjectileSystem(double deltaTime) {
 }
 
 void Player::Update(double deltaTime) {
+  UpdateProjectileSystem(deltaTime);
+
   if (animationSystem->IsPerformingAnimation()) {
     animationSystem->Update(deltaTime);
     return;
@@ -94,7 +97,24 @@ Vector2 Player::GetPosition() { return position; }
 
 PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
 
-void Player::Draw() { animationSystem->Draw(); }
+void Player::Draw() {
+  animationSystem->Draw();
+  projectileSystem->Draw();
+}
+
+void Player::SetupProjectileSystem() {
+  projectileSystem = std::make_unique<ProjectileSystem>(
+      std::move(std::make_unique<Animation>(AnimationConfig{
+          .texturePath = "../assets/pixel_art/1 Characters/Other/Arrow.png",
+          .textureTileSize = {11, 3},
+          .texturePosition = {0, 0},
+          .numberOfFrames = 1,
+          .frameSpeed = 0.1f,
+          .scale = 2.0f,
+          .loop = false,
+          .flip = false,
+      })));
+}
 
 void Player::SetupAnimations() {
   animations = std::make_unique<std::map<int, std::unique_ptr<Animation>>>();

@@ -1,4 +1,4 @@
- finclude "animation.hpp"
+#include "animation.hpp"
 
 Animation::Animation(AnimationConfig config) {
   texture = LoadTexture(config.texturePath.c_str());

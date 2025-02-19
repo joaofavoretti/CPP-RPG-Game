@@ -7,7 +7,6 @@
 
 #include "animation.hpp"
 #include "animation_system.hpp"
-#include "projectile.hpp"
 #include "projectile_system.hpp"
 
 // Has to start with 0
@@ -55,6 +54,7 @@ private:
   std::unique_ptr<ProjectileSystem> projectileSystem;
 
   void SetupAnimations();
+  void SetupProjectileSystem();
   void UpdateProjectileSystem(double deltaTime);
 
 public:
