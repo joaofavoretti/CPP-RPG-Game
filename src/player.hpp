@@ -56,6 +56,7 @@ private:
   void SetupAnimations();
   void SetupProjectileSystem();
   void UpdateProjectileSystem(double deltaTime);
+  void UpdateAnimationSystem(double deltaTime);
 
 public:
   Player(Vector2 position);

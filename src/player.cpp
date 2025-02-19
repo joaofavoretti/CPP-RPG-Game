@@ -49,6 +49,21 @@ void Player::UpdateProjectileSystem(double deltaTime) {
   projectileSystem->Update(deltaTime);
 }
 
+void Player::UpdateAnimationSystem(double deltaTime) {
+  // If the magnitude of velocity is 0. Show Idle animation
+  if (Vector2Length(velocity) == 0) {
+    animationSystem->Update(idleAnimations[lastMoveAnimation], deltaTime);
+  } else {
+    animationSystem->Update(lastMoveAnimation, deltaTime);
+  }
+
+  if (IsKeyDown(KEY_SPACE)) {
+    animationSystem->Update(attackAnimations[lastMoveAnimation], deltaTime);
+  }
+
+  animationSystem->SetPosition(position);
+}
+
 void Player::Update(double deltaTime) {
   UpdateProjectileSystem(deltaTime);
 
@@ -74,23 +89,13 @@ void Player::Update(double deltaTime) {
     lastMoveAnimation = PlayerAnimationEnum::MOVE_LEFT;
   }
 
-  // If the magnitude of velocity is 0. Show Idle animation
-  if (Vector2Length(velocity) == 0) {
-    animationSystem->Update(idleAnimations[lastMoveAnimation], deltaTime);
-  } else {
-    animationSystem->Update(lastMoveAnimation, deltaTime);
-  }
-
-  if (IsKeyDown(KEY_SPACE)) {
-    animationSystem->Update(attackAnimations[lastMoveAnimation], deltaTime);
-  }
-
   velocity =
       Vector2Scale(Vector2Scale(Vector2Normalize(velocity), speed), deltaTime);
   position = Vector2Add(position, velocity);
-  velocity = {0.0f, 0.0f};
 
-  animationSystem->SetPosition(position);
+  UpdateAnimationSystem(deltaTime);
+
+  velocity = {0.0f, 0.0f};
 }
 
 Vector2 Player::GetPosition() { return position; }
