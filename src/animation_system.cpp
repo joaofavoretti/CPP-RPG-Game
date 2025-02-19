@@ -3,50 +3,50 @@
 #include "animation_system.hpp"
 
 void AnimationSystem::RegisterAnimation(int animationId, Animation *animation) {
-	animations[animationId] = animation;
+  animations[animationId] = animation;
 }
 
 void AnimationSystem::SetPosition(Vector2 position) {
-	if (currentAnimation) {
-		currentAnimation->UpdateScreenPosition(position);
-	}
+  if (currentAnimation) {
+    currentAnimation->UpdateScreenPosition(position);
+  }
 }
 
 void AnimationSystem::Update(int animationId, double deltaTime) {
-	if (animations.find(animationId) == animations.end()) {
-		throw std::runtime_error("Animation not found");
-	}
+  if (animations.find(animationId) == animations.end()) {
+    throw std::runtime_error("Animation not found");
+  }
 
-	if (currentAnimation != animations[animationId]) {
-		currentAnimation = animations[animationId];
-		currentAnimation->Reset();
-	}
+  if (currentAnimation != animations[animationId]) {
+    currentAnimation = animations[animationId];
+    currentAnimation->Reset();
+  }
 
-	currentAnimation->Update(deltaTime);
+  currentAnimation->Update(deltaTime);
 }
 
 void AnimationSystem::Update(double deltaTime) {
-	if (currentAnimation) {
-		currentAnimation->Update(deltaTime);
-	}
+  if (currentAnimation) {
+    currentAnimation->Update(deltaTime);
+  }
 }
 
 void AnimationSystem::Draw() {
-	if (currentAnimation) {
-		currentAnimation->Draw();
-	}
+  if (currentAnimation) {
+    currentAnimation->Draw();
+  }
 }
 
 int AnimationSystem::GetCurrentAnimationId() {
-	for (auto const& [key, val] : animations) {
-		if (val == currentAnimation) {
-			return key;
-		}
-	}
+  for (auto const &[key, val] : animations) {
+    if (val == currentAnimation) {
+      return key;
+    }
+  }
 
-	return -1;
+  return -1;
 }
 
 bool AnimationSystem::IsPerformingAnimation() {
-	return currentAnimation != nullptr && !currentAnimation->IsFinished();
+  return currentAnimation != nullptr && !currentAnimation->IsFinished();
 }

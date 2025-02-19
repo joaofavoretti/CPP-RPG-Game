@@ -1,23 +1,22 @@
 #pragma once
 
-#include <raylib.h>
 #include <map>
+#include <raylib.h>
 
 #include "animation.hpp"
 
 struct AnimationSystem {
 
 private:
-	std::map<int, Animation*> animations;
-	Animation *currentAnimation = nullptr;
-
+  std::map<int, Animation *> animations;
+  Animation *currentAnimation = nullptr;
 
 public:
-	int GetCurrentAnimationId();
-	bool IsPerformingAnimation();
-	void RegisterAnimation(int animationId, Animation *animation);
-	void SetPosition(Vector2 position);
-	void Update(int animationId, double deltaTime);
-	void Update(double deltaTime);
-	void Draw();
+  int GetCurrentAnimationId();
+  bool IsPerformingAnimation();
+  void RegisterAnimation(int animationId, Animation *animation);
+  void SetPosition(Vector2 position);
+  void Update(int animationId, double deltaTime);
+  void Update(double deltaTime);
+  void Draw();
 };

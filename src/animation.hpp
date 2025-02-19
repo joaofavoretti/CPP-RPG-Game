@@ -5,31 +5,31 @@
 #include "animation_config.hpp"
 
 struct Animation {
-	Texture2D texture;
-	Vector2 textureTileSize;
-	Vector2 texturePosition;
-	float frameCounter = 0.0f;
-	int numberOfFrames;
-	int currentFrame = 0;
-	float frameSpeed;
-	bool loop;
-	bool flip;
-	float scale;
-	Vector2 screenPosition = { 0, 0 };
-	Vector2 offset = { 0, 0 };
-	float angle = 0.0f;
+  Texture2D texture;
+  Vector2 textureTileSize;
+  Vector2 texturePosition;
+  float frameCounter = 0.0f;
+  int numberOfFrames;
+  int currentFrame = 0;
+  float frameSpeed;
+  bool loop;
+  bool flip;
+  float scale;
+  Vector2 screenPosition = {0, 0};
+  Vector2 offset = {0, 0};
+  float angle = 0.0f;
 
-	Animation(AnimationConfig config);
+  Animation(AnimationConfig config);
 
-	void UpdateScreenPosition(Vector2 screenPosition);
-	
-	void UpdateAngle(float angle);
+  void UpdateScreenPosition(Vector2 screenPosition);
 
-	void Reset();
+  void UpdateAngle(float angle);
 
-	void Update(double deltaTime);
+  void Reset();
 
-	void Draw();
+  void Update(double deltaTime);
 
-	bool IsFinished();
+  void Draw();
+
+  bool IsFinished();
 };
