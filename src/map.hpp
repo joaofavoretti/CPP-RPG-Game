@@ -13,6 +13,7 @@ struct Map {
 private:
   std::unique_ptr<tmx_map> map;
   Vector2 pos = {0, 0};
+  float scale = 2.0f;
 
 public:
 
