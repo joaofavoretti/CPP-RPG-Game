@@ -4,6 +4,3 @@
 [submodule "lib/tmx"]
 	path = lib/tmx
 	url = https://github.com/baylej/tmx.git
-[submodule "lib/raylib-tmx"]
-	path = lib/raylib-tmx
-	url = https://github.com/RobLoach/raylib-tmx.git
