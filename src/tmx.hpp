@@ -233,14 +233,17 @@ private:
   void DrawTile(tmx_tile *tile, int posX, int posY, Color tint) {
     Texture *image;
     Rectangle srcRect;
-    Vector2 position;
-    position.x = (float)posX;
-    position.y = (float)posY;
+    Rectangle destRect;
 
     srcRect.x = tile->ul_x;
     srcRect.y = tile->ul_y;
     srcRect.width = tile->tileset->tile_width;
     srcRect.height = tile->tileset->tile_height;
+
+    destRect.x = posX * scale;
+    destRect.y = posY * scale;
+    destRect.width = srcRect.width * scale;
+    destRect.height = srcRect.height * scale;
 
     // Find the image
     tmx_image *im = tile->image;
@@ -252,7 +255,7 @@ private:
     }
 
     if (image) {
-      DrawTextureRec(*image, srcRect, position, tint);
+      DrawTexturePro(*image, srcRect, destRect, (Vector2){0, 0}, 0.0f, tint);
     }
   }
 
@@ -275,6 +278,7 @@ private:
 
 public:
   std::unique_ptr<tmx_map> map;
+  float scale = 2.0f;
 
   TMX(const char *filename) {
     tmx_alloc_func = MemReallocTMX;
@@ -283,11 +287,6 @@ public:
     tmx_img_free_func = UnloadTMXImage;
 
     map = std::unique_ptr<tmx_map>(tmx_load(filename));
-    if (!map) {
-      TraceLog(LOG_ERROR, "Failed to load map: %s", tmx_strerr());
-    } else {
-      TraceLog(LOG_INFO, "Loaded map: %ix%i", map->width, map->height);
-    }
   }
 
   void Draw(Vector2 pos, Color tint) {

@@ -34,12 +34,12 @@ void Draw() {
   /*player->Draw();*/
   Vector2 newPos = {static_cast<float>(100 + sin(t) * 100),
                     static_cast<float>(100 + cos(t) * 100)};
-  tmx->Draw(newPos, WHITE);
+  tmx->Draw(newPos, RED);
 }
 
 int main() {
-  const int screenWidth = 800;
-  const int screenHeight = 450;
+  const int screenWidth = 1280;
+  const int screenHeight = 720;
 
   InitWindow(screenWidth, screenHeight, "Sprite Testing Range");
 
