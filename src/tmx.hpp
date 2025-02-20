@@ -278,7 +278,7 @@ private:
 
 public:
   std::unique_ptr<tmx_map> map;
-  float scale = 2.0f;
+  float scale = 1.5f;
 
   TMX(const char *filename) {
     tmx_alloc_func = MemReallocTMX;
@@ -293,5 +293,34 @@ public:
     Color background = ColorFromTMX(map->backgroundcolor);
     DrawRectangle(pos.x, pos.y, map->width, map->height, background);
     DrawLayers(map->ly_head, pos.x, pos.y, tint);
+  }
+
+  bool IsColliding(Rectangle rect) {
+    tmx_layer *layer = map->ly_head;
+    while (layer) {
+      if (layer->type == L_LAYER) {
+        for (int y = 0; y < map->height; y++) {
+          for (int x = 0; x < map->width; x++) {
+            unsigned int gid = layer->content.gids[(y * map->width) + x];
+            if (gid != 0) {
+              tmx_tile *tile = map->tiles[gid];
+              if (tile != NULL) {
+                tmx_object *collision = tile->collision;
+                if (collision != NULL) {
+                  Rectangle tileRect = {
+                      (float)x * map->tile_width * scale, (float)y * map->tile_height * scale,
+                      (float)map->tile_width * scale, (float)map->tile_height * scale};
+                  if (CheckCollisionRecs(rect, tileRect)) {
+                    return true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      layer = layer->next;
+    }
+    return false;
   }
 };
