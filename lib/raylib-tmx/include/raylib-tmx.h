@@ -87,7 +87,7 @@ Color ColorFromTMX(uint32_t color) {
  * @internal
  */
 void *LoadTMXImage(const char *fileName) {
-	Texture2D *returnValue = MemAlloc(sizeof(Texture2D));
+	Texture2D *returnValue = (Texture2D *) MemAlloc(sizeof(Texture2D));
 	*returnValue = LoadTexture(fileName);
 	return returnValue;
 }
@@ -266,6 +266,9 @@ void DrawTMXLayerObjects(tmx_map *map, tmx_object_group *objgr, int posX, int po
                 } break;
                 case OT_POINT:
                     DrawCircle(dest.x + head->width / 2.0, dest.y + head->height / 2.0, 5, color);
+                    break;
+                case OT_NONE:
+                    // Nothing.
                     break;
             }
 		}

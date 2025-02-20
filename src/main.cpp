@@ -42,7 +42,7 @@ int main() {
 
   InitWindow(screenWidth, screenHeight, "Sprite Testing Range");
 
-  SetTargetFPS(144);
+  SetTargetFPS(60);
 
   Setup();
 
