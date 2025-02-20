@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
-project(Test)
+project(rpg)
 
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -18,11 +18,15 @@ set(MAIN_TARGET main)
 file(GLOB_RECURSE SOURCES ${SRC_DIR}/*.cpp)
 
 add_subdirectory(${LIB_DIR}/raylib)
+add_subdirectory(${LIB_DIR}/tmx)
+# add_subdirectory(${LIB_DIR}/raylib-tmx)
 
 add_executable(${MAIN_TARGET} ${SOURCES})
 
 target_include_directories(${MAIN_TARGET} PRIVATE ${SRC_DIR})
 target_include_directories(${MAIN_TARGET} PRIVATE ${LIB_DIR}/raylib/src)
+target_include_directories(${MAIN_TARGET} PRIVATE ${LIB_DIR}/tmx/src)
+target_include_directories(${MAIN_TARGET} PRIVATE ${LIB_DIR}/raylib-tmx/include)
 
 target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_17)
 
@@ -32,6 +36,7 @@ endif()
 
 target_link_libraries(${MAIN_TARGET} PRIVATE -lstdc++fs)
 target_link_libraries(${MAIN_TARGET} PRIVATE raylib)
+target_link_libraries(${MAIN_TARGET} PRIVATE tmx)
 
 set_target_properties(${MAIN_TARGET} PROPERTIES
     CXX_STANDARD 23
