@@ -9,6 +9,9 @@
 #include "animation_system.hpp"
 #include "projectile_system.hpp"
 
+#define PLAYER_SCALE 1.0f
+#define PLAYER_BASE_SPEED 60.0f
+
 // Has to start with 0
 enum PlayerAnimationEnum {
   MOVE_RIGHT = 0,
@@ -41,7 +44,7 @@ struct Player {
 private:
   Vector2 position;
   Vector2 velocity;
-  float speed = 130.0f;
+  float speed = PLAYER_BASE_SPEED * PLAYER_SCALE;
 
   std::unique_ptr<std::map<int, std::unique_ptr<Animation>>> animations;
   std::unique_ptr<AnimationSystem> animationSystem;

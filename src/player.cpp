@@ -32,10 +32,10 @@ void Player::UpdateProjectileSystem(double deltaTime) {
       {PlayerAnimationEnum::MOVE_DOWN, PI / 2}};
 
   std::map<PlayerAnimationEnum, Vector2> offsetMap = {
-      {PlayerAnimationEnum::MOVE_RIGHT, {17, 18}},
-      {PlayerAnimationEnum::MOVE_LEFT, {32, 24}},
-      {PlayerAnimationEnum::MOVE_UP, {18, 42}},
-      {PlayerAnimationEnum::MOVE_DOWN, {36, 16}}};
+      {PlayerAnimationEnum::MOVE_RIGHT, {8 * PLAYER_SCALE, 9 * PLAYER_SCALE}},
+      {PlayerAnimationEnum::MOVE_LEFT, {16 * PLAYER_SCALE, 12 * PLAYER_SCALE}},
+      {PlayerAnimationEnum::MOVE_UP, {9 * PLAYER_SCALE, 21 * PLAYER_SCALE}},
+      {PlayerAnimationEnum::MOVE_DOWN, {18 * PLAYER_SCALE, 8 * PLAYER_SCALE}}};
 
   projectileSystem->SetOffset(offsetMap[GetLastMoveAnimation()]);
 
@@ -101,8 +101,8 @@ void Player::Update(double deltaTime) {
 Vector2 Player::GetPosition() { return position; }
 
 Rectangle Player::GetBoundaries() {
-    // TODO: This offset and multipliers should be done in a better way 
-    // to generalize with the character (Something for other time)
+  // TODO: This offset and multipliers should be done in a better way
+  // to generalize with the character (Something for other time)
 
   Vector2 offset = {15, 5};
 
@@ -129,7 +129,7 @@ void Player::SetupProjectileSystem() {
           .texturePosition = {0, 0},
           .numberOfFrames = 1,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
       })));
@@ -146,7 +146,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = true,
       })));
@@ -159,7 +159,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
       })));
@@ -172,7 +172,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
       })));
@@ -185,7 +185,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
       })));
@@ -198,7 +198,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = true,
       })));
@@ -211,7 +211,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
       })));
@@ -224,7 +224,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
       })));
@@ -237,7 +237,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
       })));
@@ -250,7 +250,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = false,
           .flip = true,
       })));
@@ -263,7 +263,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
       })));
@@ -276,7 +276,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
       })));
@@ -289,7 +289,7 @@ void Player::SetupAnimations() {
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
           .frameSpeed = 0.1f,
-          .scale = 2.0f,
+          .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
       })));

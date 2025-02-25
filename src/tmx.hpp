@@ -12,7 +12,7 @@
 struct TMX {
 private:
   std::unique_ptr<tmx_map> map;
-  float scale = 1.5f;
+  float scale = 1.0f;
 
   Color ColorFromTMX(uint32_t color);
 
