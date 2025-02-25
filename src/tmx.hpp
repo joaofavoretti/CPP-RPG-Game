@@ -11,6 +11,9 @@
 
 struct TMX {
 private:
+  std::unique_ptr<tmx_map> map;
+  float scale = 1.5f;
+
   Color ColorFromTMX(uint32_t color);
 
   void DrawLayers(tmx_layer *layers, int posX, int posY, Color tint);
@@ -41,9 +44,6 @@ private:
   static void *MemReallocTMX(void *address, size_t len);
 
 public:
-  std::unique_ptr<tmx_map> map;
-  float scale = 1.5f;
-
   TMX(const char *filename);
 
   void Draw(Vector2 pos, Color tint);

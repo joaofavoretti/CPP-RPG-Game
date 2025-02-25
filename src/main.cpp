@@ -2,20 +2,15 @@
 #include <memory>
 #include <raylib.h>
 
-#include "map.hpp"
+#include "game_map.hpp"
 #include "player.hpp"
 
-#define RAYLIB_TMX_IMPLEMENTATION
-#include "raylib-tmx.h"
-
-#include "tmx.hpp"
-
 std::unique_ptr<Player> player;
-std::unique_ptr<TMX> tmx;
+std::unique_ptr<GameMap> map;
 
 void Setup() {
-  player = std::make_unique<Player>((Vector2){10, 0});
-  tmx = std::make_unique<TMX>("/archive/Tiled/first-map.tmx");
+  player = std::make_unique<Player>((Vector2){10, 10});
+  /*map = std::make_unique<GameMap>(GameMapOption::MAIN_HALL);*/
 }
 
 void Update(double deltaTime) {
@@ -25,7 +20,7 @@ void Update(double deltaTime) {
 void Draw() {
   ClearBackground(RAYWHITE);
 
-  tmx->Draw({0, 0}, WHITE);
+  /*map->Draw();*/
 
   player->Draw();
 }
