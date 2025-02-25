@@ -101,10 +101,7 @@ void Player::Update(double deltaTime) {
 Vector2 Player::GetPosition() { return position; }
 
 Rectangle Player::GetBoundaries() {
-  // TODO: This offset and multipliers should be done in a better way
-  // to generalize with the character (Something for other time)
-
-  Vector2 offset = {15, 5};
+  Vector2 offset = {8, 3};
 
   return Rectangle{
       .x = position.x + offset.x,
