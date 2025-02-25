@@ -100,6 +100,20 @@ void Player::Update(double deltaTime) {
 
 Vector2 Player::GetPosition() { return position; }
 
+Rectangle Player::GetBoundaries() {
+    // TODO: This offset and multipliers should be done in a better way 
+    // to generalize with the character (Something for other time)
+
+  Vector2 offset = {15, 5};
+
+  return Rectangle{
+      .x = position.x + offset.x,
+      .y = position.y + offset.y,
+      .width = animationSystem->GetSize().x - 2 * offset.x,
+      .height = animationSystem->GetSize().y - 4 * offset.y,
+  };
+}
+
 PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
 
 void Player::Draw() {

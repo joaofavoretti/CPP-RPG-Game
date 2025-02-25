@@ -25,9 +25,17 @@ enum PlayerAnimationEnum {
   ATTACK_DOWN,
 };
 
-#define REGISTER_ANIMATION(animationSystem, animationId)                       \
-  animationSystem->RegisterAnimation(animationId,                              \
-                                     animations->at(animationId).get())
+static std::map<PlayerAnimationEnum, PlayerAnimationEnum> idleAnimations = {
+    {PlayerAnimationEnum::MOVE_RIGHT, PlayerAnimationEnum::IDLE_RIGHT},
+    {PlayerAnimationEnum::MOVE_LEFT, PlayerAnimationEnum::IDLE_LEFT},
+    {PlayerAnimationEnum::MOVE_UP, PlayerAnimationEnum::IDLE_UP},
+    {PlayerAnimationEnum::MOVE_DOWN, PlayerAnimationEnum::IDLE_DOWN}};
+
+static std::map<PlayerAnimationEnum, PlayerAnimationEnum> attackAnimations = {
+    {PlayerAnimationEnum::MOVE_RIGHT, PlayerAnimationEnum::ATTACK_RIGHT},
+    {PlayerAnimationEnum::MOVE_LEFT, PlayerAnimationEnum::ATTACK_LEFT},
+    {PlayerAnimationEnum::MOVE_UP, PlayerAnimationEnum::ATTACK_UP},
+    {PlayerAnimationEnum::MOVE_DOWN, PlayerAnimationEnum::ATTACK_DOWN}};
 
 struct Player {
 private:
@@ -39,18 +47,6 @@ private:
   std::unique_ptr<AnimationSystem> animationSystem;
   PlayerAnimationEnum lastMoveAnimation = PlayerAnimationEnum::MOVE_RIGHT;
 
-  std::map<PlayerAnimationEnum, PlayerAnimationEnum> idleAnimations = {
-      {PlayerAnimationEnum::MOVE_RIGHT, PlayerAnimationEnum::IDLE_RIGHT},
-      {PlayerAnimationEnum::MOVE_LEFT, PlayerAnimationEnum::IDLE_LEFT},
-      {PlayerAnimationEnum::MOVE_UP, PlayerAnimationEnum::IDLE_UP},
-      {PlayerAnimationEnum::MOVE_DOWN, PlayerAnimationEnum::IDLE_DOWN}};
-
-  std::map<PlayerAnimationEnum, PlayerAnimationEnum> attackAnimations = {
-      {PlayerAnimationEnum::MOVE_RIGHT, PlayerAnimationEnum::ATTACK_RIGHT},
-      {PlayerAnimationEnum::MOVE_LEFT, PlayerAnimationEnum::ATTACK_LEFT},
-      {PlayerAnimationEnum::MOVE_UP, PlayerAnimationEnum::ATTACK_UP},
-      {PlayerAnimationEnum::MOVE_DOWN, PlayerAnimationEnum::ATTACK_DOWN}};
-
   std::unique_ptr<ProjectileSystem> projectileSystem;
 
   void SetupAnimations();
@@ -61,6 +57,7 @@ private:
 public:
   Player(Vector2 position);
   Vector2 GetPosition();
+  Rectangle GetBoundaries();
   PlayerAnimationEnum GetLastMoveAnimation();
   void Update(double deltaTime);
   void Draw();

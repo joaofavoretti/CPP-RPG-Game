@@ -47,6 +47,17 @@ int AnimationSystem::GetCurrentAnimationId() {
   return -1;
 }
 
+Vector2 AnimationSystem::GetSize() {
+  if (currentAnimation) {
+    return {
+        currentAnimation->textureTileSize.x * currentAnimation->scale,
+        currentAnimation->textureTileSize.y * currentAnimation->scale,
+    };
+  }
+
+  return {0, 0};
+}
+
 bool AnimationSystem::IsPerformingAnimation() {
   return currentAnimation != nullptr && !currentAnimation->IsFinished();
 }
