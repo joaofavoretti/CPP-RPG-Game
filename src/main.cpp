@@ -11,8 +11,8 @@ std::unique_ptr<GameMap> map;
 std::unique_ptr<GameCamera> camera;
 
 void Setup() {
-  player = std::make_unique<Player>((Vector2){20, 20});
   map = std::make_unique<GameMap>(GameMapOption::MAIN_HALL);
+  player = std::make_unique<Player>(map->GetInitialPosition());
   camera = std::make_unique<GameCamera>();
 }
 
