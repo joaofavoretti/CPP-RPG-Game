@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <vector>
+#include <functional>
 #include <memory>
 #include <raylib.h>
 #include <raymath.h>
@@ -52,15 +54,19 @@ private:
 
   std::unique_ptr<ProjectileSystem> projectileSystem;
 
+  std::vector<std::function<bool(Rectangle)>> collisionChecks;
+
   void SetupAnimations();
   void SetupProjectileSystem();
   void UpdateProjectileSystem(double deltaTime);
   void UpdateAnimationSystem(double deltaTime);
+  bool IsAvailableToMove(Rectangle newBoundary);
 
 public:
   Player(Vector2 position);
   Vector2 GetPosition();
   Rectangle GetBoundaries();
+  void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck);
   PlayerAnimationEnum GetLastMoveAnimation();
   void Update(double deltaTime);
   void Draw();

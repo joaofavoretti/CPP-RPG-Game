@@ -11,7 +11,7 @@ enum GameMapOption {
 };
 
 static const std::map<GameMapOption, std::string> GameMapFilename = {
-  {MAIN_HALL, "/archive/Tiled/first-map.tmx"},
+  {MAIN_HALL, "../assets/map/first-map.tmx"},
 };
 
 static const std::map<GameMapOption, Vector2> GameMapInitialPosition = {
@@ -32,6 +32,10 @@ public:
 
   Vector2 GetInitialPosition() {
     return GameMapInitialPosition.at(option);
+  }
+
+  bool IsColliding(Rectangle rect) {
+    return tmx->IsColliding(rect);
   }
 
   void Draw() {

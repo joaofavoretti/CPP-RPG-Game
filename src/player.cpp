@@ -64,6 +64,16 @@ void Player::UpdateAnimationSystem(double deltaTime) {
   animationSystem->SetPosition(position);
 }
 
+bool Player::IsAvailableToMove(Rectangle newBoundary) {
+  for (auto &collisionCheck : collisionChecks) {
+    if (collisionCheck(newBoundary)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void Player::Update(double deltaTime) {
   UpdateProjectileSystem(deltaTime);
 
@@ -91,7 +101,15 @@ void Player::Update(double deltaTime) {
 
   velocity =
       Vector2Scale(Vector2Scale(Vector2Normalize(velocity), speed), deltaTime);
-  position = Vector2Add(position, velocity);
+  Vector2 newPosition = Vector2Add(position, velocity);
+
+  Rectangle newBoundary = GetBoundaries();
+  newBoundary.x = newPosition.x;
+  newBoundary.y = newPosition.y;
+
+  if (IsAvailableToMove(newBoundary)) {
+    position = newPosition;
+  }
 
   UpdateAnimationSystem(deltaTime);
 
@@ -109,6 +127,10 @@ Rectangle Player::GetBoundaries() {
       .width = animationSystem->GetSize().x - 2 * offset.x,
       .height = animationSystem->GetSize().y - 4 * offset.y,
   };
+}
+
+void Player::AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) {
+  collisionChecks.push_back(collisionCheck);
 }
 
 PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
