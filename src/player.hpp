@@ -60,6 +60,7 @@ private:
   void SetupProjectileSystem();
   void UpdateProjectileSystem(double deltaTime);
   void UpdateAnimationSystem(double deltaTime);
+  Rectangle GetBoundariesFromPosition(Vector2 position);
   bool IsAvailableToMove(Rectangle newBoundary);
 
 public:

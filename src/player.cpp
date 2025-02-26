@@ -103,9 +103,7 @@ void Player::Update(double deltaTime) {
       Vector2Scale(Vector2Scale(Vector2Normalize(velocity), speed), deltaTime);
   Vector2 newPosition = Vector2Add(position, velocity);
 
-  Rectangle newBoundary = GetBoundaries();
-  newBoundary.x = newPosition.x;
-  newBoundary.y = newPosition.y;
+  Rectangle newBoundary = GetBoundariesFromPosition(newPosition);
 
   if (IsAvailableToMove(newBoundary)) {
     position = newPosition;
@@ -119,6 +117,10 @@ void Player::Update(double deltaTime) {
 Vector2 Player::GetPosition() { return position; }
 
 Rectangle Player::GetBoundaries() {
+  return GetBoundariesFromPosition(position);
+}
+
+Rectangle Player::GetBoundariesFromPosition(Vector2 position) {
   Vector2 offset = {8, 3};
 
   return Rectangle{
