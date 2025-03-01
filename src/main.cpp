@@ -2,8 +2,8 @@
 #include <memory>
 #include <raylib.h>
 
-#include "game_map.hpp"
 #include "game_camera.hpp"
+#include "game_map.hpp"
 #include "player.hpp"
 
 std::unique_ptr<Player> player;
@@ -13,7 +13,8 @@ std::unique_ptr<GameCamera> camera;
 void Setup() {
   map = std::make_unique<GameMap>(GameMapOption::MAIN_HALL);
   player = std::make_unique<Player>(map->GetInitialPosition());
-  player->AddCollisionCheck([&](Rectangle rect) { return map->IsColliding(rect); });
+  player->AddCollisionCheck(
+      [&](Rectangle rect) { return map->IsColliding(rect); });
   camera = std::make_unique<GameCamera>();
 }
 
@@ -31,12 +32,7 @@ void Draw() {
   ClearBackground(RAYWHITE);
 
   BeginMode2D(camera->GetCamera());
-
   map->Draw();
-
-  DrawRectangleLines(player->GetBoundaries().x, player->GetBoundaries().y,
-                     player->GetBoundaries().width,
-                     player->GetBoundaries().height, RED);
   player->Draw();
   EndMode2D();
 }

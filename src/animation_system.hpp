@@ -5,10 +5,6 @@
 
 #include "animation.hpp"
 
-#define REGISTER_ANIMATION(animationSystem, animationId)                       \
-  animationSystem->RegisterAnimation(animationId,                              \
-                                     animations->at(animationId).get())
-
 struct AnimationSystem {
 
 private:

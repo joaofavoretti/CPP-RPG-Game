@@ -9,8 +9,8 @@ bool ProjectileSystem::IsOutOfBounds(Projectile &projectile) {
          projectile.GetPosition().y > GetScreenHeight();
 }
 
-ProjectileSystem::ProjectileSystem(std::unique_ptr<Animation> baseAnimation)
-    : baseAnimation(std::move(baseAnimation)) {}
+ProjectileSystem::ProjectileSystem(std::unique_ptr<Animation> baseAnimation, Rectangle boundaryConfig)
+    : baseAnimation(std::move(baseAnimation)), boundaryConfig(boundaryConfig) {}
 
 void ProjectileSystem::SetOffset(Vector2 offset) {
   baseAnimation->offset = offset;
@@ -21,7 +21,12 @@ void ProjectileSystem::Add(ProjectileConfig projectileConfig) {
       std::make_unique<Animation>(*baseAnimation);
   animation->UpdateAngle(projectileConfig.angle);
   projectiles.push_back(
-      std::make_unique<Projectile>(projectileConfig, std::move(animation)));
+      std::make_unique<Projectile>(projectileConfig, std::move(animation), boundaryConfig));
+}
+
+void ProjectileSystem::AddCollisionCheck(
+    std::function<bool(Rectangle)> collisionCheck) {
+  collisionChecks.push_back(collisionCheck);
 }
 
 void ProjectileSystem::Update(double deltaTime) {

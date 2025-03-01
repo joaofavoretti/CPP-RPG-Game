@@ -30,6 +30,10 @@ target_include_directories(${MAIN_TARGET} PRIVATE ${LIB_DIR}/raylib-tmx/include)
 
 target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_17)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${MAIN_TARGET} PRIVATE DEBUG)
+endif()
+
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(${MAIN_TARGET} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()

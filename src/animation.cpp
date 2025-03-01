@@ -47,6 +47,10 @@ void Animation::Draw() {
   DrawTexturePro(texture, sourceRect, destRect, origin, rotation, WHITE);
 }
 
+Vector2 Animation::GetSize() {
+  return {textureTileSize.x * scale, textureTileSize.y * scale};
+}
+
 bool Animation::IsFinished() {
   return loop || currentFrame == numberOfFrames - 1;
 }

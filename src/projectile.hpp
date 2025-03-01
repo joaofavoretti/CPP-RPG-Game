@@ -13,16 +13,17 @@ struct ProjectileConfig {
 };
 
 struct Projectile {
+private:
 	Vector2 position;
 	float angle;
 	float speed;
+	Rectangle boundaryConfig;
 	std::unique_ptr<Animation> animation;
 
-	Projectile(ProjectileConfig config, std::unique_ptr<Animation> animation);
-
-	void Update(double deltaTime);
-
+public:
+	Projectile(ProjectileConfig config, std::unique_ptr<Animation> animation, Rectangle boundaryConfig);
+	Rectangle GetBoundaries();
 	Vector2 GetPosition();
-
+	void Update(double deltaTime);
 	void Draw();
 };

@@ -2,6 +2,10 @@
 
 #include "player.hpp"
 
+#define REGISTER_ANIMATION(animationSystem, animationId)                       \
+  animationSystem->RegisterAnimation(animationId,                              \
+                                     animations->at(animationId).get())
+
 Player::Player(Vector2 position) : position(position) {
   SetupAnimations();
   SetupProjectileSystem();
@@ -43,7 +47,7 @@ void Player::UpdateProjectileSystem(double deltaTime) {
     projectileSystem->Add(ProjectileConfig{
         .position = GetPosition(),
         .angle = angleMap[GetLastMoveAnimation()],
-        .speed = 500,
+        .speed = 50,
     });
   }
   projectileSystem->Update(deltaTime);
@@ -140,6 +144,11 @@ PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
 void Player::Draw() {
   animationSystem->Draw();
   projectileSystem->Draw();
+
+#ifdef DEBUG
+  DrawRectangleLines(GetBoundaries().x, GetBoundaries().y,
+                     GetBoundaries().width, GetBoundaries().height, RED);
+#endif
 }
 
 void Player::SetupProjectileSystem() {
@@ -153,7 +162,13 @@ void Player::SetupProjectileSystem() {
           .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
-      })));
+      })),
+      Rectangle {
+          .x = 7,
+          .y = 8,
+          .width = 13,
+          .height = 5,
+      });
 }
 
 void Player::SetupAnimations() {

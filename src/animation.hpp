@@ -19,17 +19,13 @@ struct Animation {
   Vector2 offset = {0, 0};
   float angle = 0.0f;
 
+  void SetOffset(Vector2 offset);
+  Vector2 GetSize();
   Animation(AnimationConfig config);
-
   void UpdateScreenPosition(Vector2 screenPosition);
-
   void UpdateAngle(float angle);
-
   void Reset();
-
   void Update(double deltaTime);
-
   void Draw();
-
   bool IsFinished();
 };

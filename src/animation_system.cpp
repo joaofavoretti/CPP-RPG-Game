@@ -49,10 +49,7 @@ int AnimationSystem::GetCurrentAnimationId() {
 
 Vector2 AnimationSystem::GetSize() {
   if (currentAnimation) {
-    return {
-        currentAnimation->textureTileSize.x * currentAnimation->scale,
-        currentAnimation->textureTileSize.y * currentAnimation->scale,
-    };
+    return currentAnimation->GetSize();
   }
 
   return {0, 0};
