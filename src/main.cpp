@@ -11,7 +11,7 @@ std::unique_ptr<GameMap> map;
 std::unique_ptr<GameCamera> camera;
 
 void Setup() {
-  map = std::make_unique<GameMap>(GameMapOption::MAIN_HALL);
+  map = std::make_unique<GameMap>(GameMapOption::STAR_HALL);
   player = std::make_unique<Player>(map->GetInitialPosition());
   player->AddCollisionCheck(
       [&](Rectangle rect) { return map->IsColliding(rect); });
