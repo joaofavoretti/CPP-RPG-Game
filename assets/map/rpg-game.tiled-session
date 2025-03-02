@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Tileset.tsx",
+    "activeFile": "second-map.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -43,7 +43,7 @@
         },
         "first-map.tmx": {
             "scale": 2.622395833333333,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
                 "x": 240.04766633565046,
                 "y": 106.39126117179742
@@ -71,8 +71,8 @@
     "property.type": "bool",
     "recentFiles": [
         "first-map.tmx",
-        "second-map.tmx",
         "Tileset.tsx",
+        "second-map.tmx",
         "/home/joao/my/tests/cpp/RPG-Shattered-Unity/assets/pixel_art/5Tiled_files/Dungeon Tileset.tmx",
         "empty-room.tmx"
     ],

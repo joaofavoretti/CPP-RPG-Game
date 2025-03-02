@@ -1,11 +1,11 @@
 #pragma once
 
-#include <map>
-#include <vector>
 #include <functional>
+#include <map>
 #include <memory>
 #include <raylib.h>
 #include <raymath.h>
+#include <vector>
 
 #include "animation.hpp"
 #include "animation_system.hpp"
