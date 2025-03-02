@@ -38,7 +38,7 @@ void Player::UpdateProjectileSystem(double deltaTime) {
   std::map<PlayerAnimationEnum, Vector2> offsetMap = {
       {PlayerAnimationEnum::MOVE_RIGHT, {8 * PLAYER_SCALE, 9 * PLAYER_SCALE}},
       {PlayerAnimationEnum::MOVE_LEFT, {16 * PLAYER_SCALE, 12 * PLAYER_SCALE}},
-      {PlayerAnimationEnum::MOVE_UP, {9 * PLAYER_SCALE, 21 * PLAYER_SCALE}},
+      {PlayerAnimationEnum::MOVE_UP, {12 * PLAYER_SCALE, 21 * PLAYER_SCALE}},
       {PlayerAnimationEnum::MOVE_DOWN, {18 * PLAYER_SCALE, 8 * PLAYER_SCALE}}};
 
   projectileSystem->SetOffset(offsetMap[GetLastMoveAnimation()]);
@@ -47,7 +47,7 @@ void Player::UpdateProjectileSystem(double deltaTime) {
     projectileSystem->Add(ProjectileConfig{
         .position = GetPosition(),
         .angle = angleMap[GetLastMoveAnimation()],
-        .speed = 50,
+        .speed = 200,
     });
   }
   projectileSystem->Update(deltaTime);
@@ -137,13 +137,14 @@ Rectangle Player::GetBoundariesFromPosition(Vector2 position) {
 
 void Player::AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) {
   collisionChecks.push_back(collisionCheck);
+  projectileSystem->AddCollisionCheck(collisionCheck);
 }
 
 PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
 
 void Player::Draw() {
-  animationSystem->Draw();
   projectileSystem->Draw();
+  animationSystem->Draw();
 
 #ifdef DEBUG
   DrawRectangleLines(GetBoundaries().x, GetBoundaries().y,
@@ -163,11 +164,11 @@ void Player::SetupProjectileSystem() {
           .loop = false,
           .flip = false,
       })),
-      Rectangle {
-          .x = 7,
-          .y = 8,
-          .width = 13,
-          .height = 5,
+      Rectangle{
+          .x = 0,
+          .y = 0,
+          .width = 11,
+          .height = 3,
       });
 }
 

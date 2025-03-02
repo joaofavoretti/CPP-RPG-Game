@@ -3,10 +3,13 @@
 #include "projectile_system.hpp"
 
 bool ProjectileSystem::IsOutOfBounds(Projectile &projectile) {
-  return projectile.GetPosition().x < 0 ||
-         projectile.GetPosition().x > GetScreenWidth() ||
-         projectile.GetPosition().y < 0 ||
-         projectile.GetPosition().y > GetScreenHeight();
+  for (auto &collisionCheck : collisionChecks) {
+    if (collisionCheck(projectile.GetBoundaries())) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 ProjectileSystem::ProjectileSystem(std::unique_ptr<Animation> baseAnimation, Rectangle boundaryConfig)
