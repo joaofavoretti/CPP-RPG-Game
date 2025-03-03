@@ -56,7 +56,7 @@ private:
 
   std::vector<std::function<bool(Rectangle)>> collisionChecks;
 
-  void SetupAnimations();
+  void SetupAnimationSystem();
   void SetupProjectileSystem();
   void UpdateProjectileSystem(double deltaTime);
   void UpdateAnimationSystem(double deltaTime);
@@ -66,6 +66,7 @@ private:
 public:
   Player(Vector2 position);
   Vector2 GetPosition();
+  Vector2 GetBoundaryCenter();
   Rectangle GetBoundaries();
   void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck);
   PlayerAnimationEnum GetLastMoveAnimation();

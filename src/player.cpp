@@ -2,30 +2,13 @@
 
 #include "player.hpp"
 
-#define REGISTER_ANIMATION(animationSystem, animationId)                       \
-  animationSystem->RegisterAnimation(animationId,                              \
-                                     animations->at(animationId).get())
+#define PLAYER_ANIMATION_BASE_PATH "../assets/pixel_art/1 Characters/1"
 
 Player::Player(Vector2 position) : position(position) {
-  SetupAnimations();
+  SetupAnimationSystem();
   SetupProjectileSystem();
 
   velocity = {0.0f, 0.0f};
-
-  animationSystem = std::make_unique<AnimationSystem>();
-
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_RIGHT);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_LEFT);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_UP);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::MOVE_DOWN);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_RIGHT);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_LEFT);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_UP);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::IDLE_DOWN);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_RIGHT);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_LEFT);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_UP);
-  REGISTER_ANIMATION(animationSystem, PlayerAnimationEnum::ATTACK_DOWN);
 }
 
 void Player::UpdateProjectileSystem(double deltaTime) {
@@ -120,6 +103,12 @@ void Player::Update(double deltaTime) {
 
 Vector2 Player::GetPosition() { return position; }
 
+Vector2 Player::GetBoundaryCenter() {
+  Rectangle boundaries = GetBoundaries();
+  return {boundaries.x + boundaries.width / 2.0f,
+          boundaries.y + boundaries.height / 2.0f};
+}
+
 Rectangle Player::GetBoundaries() {
   return GetBoundariesFromPosition(position);
 }
@@ -172,13 +161,13 @@ void Player::SetupProjectileSystem() {
       });
 }
 
-void Player::SetupAnimations() {
-  animations = std::make_unique<std::map<int, std::unique_ptr<Animation>>>();
+void Player::SetupAnimationSystem() {
+  animationSystem = std::make_unique<AnimationSystem>();
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::MOVE_RIGHT,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/S_Walk.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Walk.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
@@ -186,12 +175,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = true,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::MOVE_LEFT,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/S_Walk.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Walk.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
@@ -199,12 +188,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::MOVE_UP,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/U_Walk.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Walk.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
@@ -212,12 +201,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::MOVE_DOWN,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/D_Walk.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Walk.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 6,
@@ -225,12 +214,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::IDLE_RIGHT,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/S_Idle.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Idle.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -238,12 +227,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = true,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::IDLE_LEFT,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/S_Idle.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Idle.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -251,12 +240,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::IDLE_UP,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/U_Idle.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Idle.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -264,12 +253,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::IDLE_DOWN,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/D_Idle.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Idle.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -277,12 +266,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = true,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::ATTACK_RIGHT,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/S_Attack.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Attack.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -290,12 +279,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = false,
           .flip = true,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::ATTACK_LEFT,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/S_Attack.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Attack.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -303,12 +292,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::ATTACK_UP,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/U_Attack.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Attack.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -316,12 +305,12 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
-      })));
+      });
 
-  animations->insert(std::make_pair(
+  animationSystem->RegisterAnimation(
       PlayerAnimationEnum::ATTACK_DOWN,
-      std::make_unique<Animation>((AnimationConfig){
-          .texturePath = "../assets/pixel_art/1 Characters/1/D_Attack.png",
+      AnimationConfig{
+          .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Attack.png",
           .textureTileSize = {32, 32},
           .texturePosition = {0, 0},
           .numberOfFrames = 4,
@@ -329,5 +318,5 @@ void Player::SetupAnimations() {
           .scale = PLAYER_SCALE,
           .loop = false,
           .flip = false,
-      })));
+      });
 }

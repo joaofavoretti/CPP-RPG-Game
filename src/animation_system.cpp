@@ -1,9 +1,12 @@
 #include <stdexcept>
+#include <memory>
 
 #include "animation_system.hpp"
+#include "animation.hpp"
 
-void AnimationSystem::RegisterAnimation(int animationId, Animation *animation) {
-  animations[animationId] = animation;
+void AnimationSystem::RegisterAnimation(int animationId, AnimationConfig animationConfig) {
+  std::unique_ptr<Animation> animation = std::make_unique<Animation>(animationConfig);
+  animations[animationId] = std::move(animation);
 }
 
 void AnimationSystem::SetPosition(Vector2 position) {
@@ -17,8 +20,8 @@ void AnimationSystem::Update(int animationId, double deltaTime) {
     throw std::runtime_error("Animation not found");
   }
 
-  if (currentAnimation != animations[animationId]) {
-    currentAnimation = animations[animationId];
+  if (currentAnimation != animations[animationId].get()) {
+    currentAnimation = animations[animationId].get();
     currentAnimation->Reset();
   }
 
@@ -39,7 +42,7 @@ void AnimationSystem::Draw() {
 
 int AnimationSystem::GetCurrentAnimationId() {
   for (auto const &[key, val] : animations) {
-    if (val == currentAnimation) {
+    if (val.get() == currentAnimation) {
       return key;
     }
   }
