@@ -5,10 +5,14 @@
 #include "game_camera.hpp"
 #include "game_map.hpp"
 #include "player.hpp"
+#include "fireball_entity.hpp"
+#include "coin_entity.hpp"
 
 std::unique_ptr<Player> player;
 std::unique_ptr<GameMap> map;
 std::unique_ptr<GameCamera> camera;
+std::unique_ptr<FireballEntity> fireball;
+std::unique_ptr<CoinEntity> coin;
 
 void Setup() {
   map = std::make_unique<GameMap>(GameMapOption::MAIN_HALL);
@@ -16,9 +20,13 @@ void Setup() {
   player->AddCollisionCheck(
       [&](Rectangle rect) { return map->IsColliding(rect); });
   camera = std::make_unique<GameCamera>();
+  fireball = std::make_unique<FireballEntity>(Vector2{100, 100}, Vector2{0, 0});
+  coin = std::make_unique<CoinEntity>(Vector2{150, 150}, 4);
 }
 
 void Update(double deltaTime) {
+  fireball->Update(deltaTime);
+  coin->Update(deltaTime);
   player->Update(deltaTime);
 
   camera->FollowTarget(player->GetBoundaryCenter());
@@ -30,6 +38,8 @@ void Draw() {
 
   BeginMode2D(camera->GetCamera());
   map->Draw();
+  fireball->Draw();
+  coin->Draw();
   player->Draw();
   EndMode2D();
 }

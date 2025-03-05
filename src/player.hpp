@@ -48,7 +48,6 @@ private:
   Vector2 velocity;
   float speed = PLAYER_BASE_SPEED * PLAYER_SCALE;
 
-  std::unique_ptr<std::map<int, std::unique_ptr<Animation>>> animations;
   std::unique_ptr<AnimationSystem> animationSystem;
   PlayerAnimationEnum lastMoveAnimation = PlayerAnimationEnum::MOVE_RIGHT;
 

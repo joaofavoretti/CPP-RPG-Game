@@ -7,7 +7,6 @@
 #include "animation.hpp"
 
 struct AnimationSystem {
-
 private:
   std::map<int, std::unique_ptr<Animation>> animations;
   Animation *currentAnimation = nullptr;
