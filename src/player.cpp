@@ -4,25 +4,27 @@
 
 #define PLAYER_ANIMATION_BASE_PATH "../assets/pixel_art/1 Characters/1"
 
-Player::Player(Vector2 position) : position(position) {
+Player::Player(Vector2 position) : Entity(position, {0, 0}, PLAYER_SCALE) {
   SetupAnimationSystem();
   SetupProjectileSystem();
-
-  velocity = {0.0f, 0.0f};
 }
 
 void Player::UpdateProjectileSystem(double deltaTime) {
-  std::map<PlayerAnimationEnum, float> angleMap = {
-      {PlayerAnimationEnum::MOVE_RIGHT, 0},
-      {PlayerAnimationEnum::MOVE_LEFT, PI},
-      {PlayerAnimationEnum::MOVE_UP, 3 * PI / 2},
-      {PlayerAnimationEnum::MOVE_DOWN, PI / 2}};
+  std::map<Entity::EntityAnimationId, float> angleMap = {
+      {Entity::EntityAnimationId::MOVE_RIGHT, 0},
+      {Entity::EntityAnimationId::MOVE_LEFT, PI},
+      {Entity::EntityAnimationId::MOVE_UP, 3 * PI / 2},
+      {Entity::EntityAnimationId::MOVE_DOWN, PI / 2}};
 
-  std::map<PlayerAnimationEnum, Vector2> offsetMap = {
-      {PlayerAnimationEnum::MOVE_RIGHT, {8 * PLAYER_SCALE, 9 * PLAYER_SCALE}},
-      {PlayerAnimationEnum::MOVE_LEFT, {16 * PLAYER_SCALE, 12 * PLAYER_SCALE}},
-      {PlayerAnimationEnum::MOVE_UP, {12 * PLAYER_SCALE, 21 * PLAYER_SCALE}},
-      {PlayerAnimationEnum::MOVE_DOWN, {18 * PLAYER_SCALE, 8 * PLAYER_SCALE}}};
+  std::map<Entity::EntityAnimationId, Vector2> offsetMap = {
+      {Entity::EntityAnimationId::MOVE_RIGHT,
+       {8 * PLAYER_SCALE, 9 * PLAYER_SCALE}},
+      {Entity::EntityAnimationId::MOVE_LEFT,
+       {16 * PLAYER_SCALE, 12 * PLAYER_SCALE}},
+      {Entity::EntityAnimationId::MOVE_UP,
+       {12 * PLAYER_SCALE, 21 * PLAYER_SCALE}},
+      {Entity::EntityAnimationId::MOVE_DOWN,
+       {18 * PLAYER_SCALE, 8 * PLAYER_SCALE}}};
 
   projectileSystem->SetOffset(offsetMap[GetLastMoveAnimation()]);
 
@@ -71,19 +73,19 @@ void Player::Update(double deltaTime) {
 
   if (IsKeyDown(KEY_UP)) {
     velocity.y -= speed;
-    lastMoveAnimation = PlayerAnimationEnum::MOVE_UP;
+    lastMoveAnimation = Entity::EntityAnimationId::MOVE_UP;
   }
   if (IsKeyDown(KEY_DOWN)) {
     velocity.y += speed;
-    lastMoveAnimation = PlayerAnimationEnum::MOVE_DOWN;
+    lastMoveAnimation = Entity::EntityAnimationId::MOVE_DOWN;
   }
   if (IsKeyDown(KEY_RIGHT)) {
     velocity.x += speed;
-    lastMoveAnimation = PlayerAnimationEnum::MOVE_RIGHT;
+    lastMoveAnimation = Entity::EntityAnimationId::MOVE_RIGHT;
   }
   if (IsKeyDown(KEY_LEFT)) {
     velocity.x -= speed;
-    lastMoveAnimation = PlayerAnimationEnum::MOVE_LEFT;
+    lastMoveAnimation = Entity::EntityAnimationId::MOVE_LEFT;
   }
 
   velocity =
@@ -100,8 +102,6 @@ void Player::Update(double deltaTime) {
 
   velocity = {0.0f, 0.0f};
 }
-
-Vector2 Player::GetPosition() { return position; }
 
 Vector2 Player::GetBoundaryCenter() {
   Rectangle boundaries = GetBoundaries();
@@ -129,7 +129,9 @@ void Player::AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) {
   projectileSystem->AddCollisionCheck(collisionCheck);
 }
 
-PlayerAnimationEnum Player::GetLastMoveAnimation() { return lastMoveAnimation; }
+Entity::EntityAnimationId Player::GetLastMoveAnimation() {
+  return lastMoveAnimation;
+}
 
 void Player::Draw() {
   projectileSystem->Draw();
@@ -161,115 +163,105 @@ void Player::SetupProjectileSystem() {
       });
 }
 
-void Player::SetupAnimationSystem() {
-  animationSystem = std::make_unique<AnimationSystem>();
+void Player::RegisterAnimations() {
+  RegisterAnimation(Entity::EntityAnimationId::MOVE_RIGHT,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Walk.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 6,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = true,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::MOVE_RIGHT,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Walk.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 6,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = true,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::MOVE_LEFT,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Walk.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 6,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = false,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::MOVE_LEFT,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Walk.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 6,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = false,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::MOVE_UP,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Walk.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 6,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = false,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::MOVE_UP,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Walk.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 6,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = false,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::MOVE_DOWN,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Walk.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 6,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = false,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::MOVE_DOWN,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Walk.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 6,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = false,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::IDLE_RIGHT,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Idle.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 4,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = true,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::IDLE_RIGHT,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Idle.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 4,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = true,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::IDLE_LEFT,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Idle.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 4,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = false,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::IDLE_LEFT,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Idle.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 4,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = false,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::IDLE_UP,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Idle.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 4,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = false,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::IDLE_UP,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Idle.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 4,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = false,
-      });
+  RegisterAnimation(Entity::EntityAnimationId::IDLE_DOWN,
+                    AnimationConfig{
+                        .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Idle.png",
+                        .textureTileSize = {32, 32},
+                        .texturePosition = {0, 0},
+                        .numberOfFrames = 4,
+                        .frameSpeed = 0.1f,
+                        .scale = PLAYER_SCALE,
+                        .loop = true,
+                        .flip = false,
+                    });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::IDLE_DOWN,
-      AnimationConfig{
-          .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Idle.png",
-          .textureTileSize = {32, 32},
-          .texturePosition = {0, 0},
-          .numberOfFrames = 4,
-          .frameSpeed = 0.1f,
-          .scale = PLAYER_SCALE,
-          .loop = true,
-          .flip = false,
-      });
-
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::ATTACK_RIGHT,
+  RegisterAnimation(
+      Entity::EntityAnimationId::ATTACK_RIGHT,
       AnimationConfig{
           .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Attack.png",
           .textureTileSize = {32, 32},
@@ -281,8 +273,8 @@ void Player::SetupAnimationSystem() {
           .flip = true,
       });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::ATTACK_LEFT,
+  RegisterAnimation(
+      Entity::EntityAnimationId::ATTACK_LEFT,
       AnimationConfig{
           .texturePath = PLAYER_ANIMATION_BASE_PATH "/S_Attack.png",
           .textureTileSize = {32, 32},
@@ -294,8 +286,8 @@ void Player::SetupAnimationSystem() {
           .flip = false,
       });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::ATTACK_UP,
+  RegisterAnimation(
+      Entity::EntityAnimationId::ATTACK_UP,
       AnimationConfig{
           .texturePath = PLAYER_ANIMATION_BASE_PATH "/U_Attack.png",
           .textureTileSize = {32, 32},
@@ -307,8 +299,8 @@ void Player::SetupAnimationSystem() {
           .flip = false,
       });
 
-  animationSystem->RegisterAnimation(
-      PlayerAnimationEnum::ATTACK_DOWN,
+  RegisterAnimation(
+      Entity::EntityAnimationId::ATTACK_DOWN,
       AnimationConfig{
           .texturePath = PLAYER_ANIMATION_BASE_PATH "/D_Attack.png",
           .textureTileSize = {32, 32},
@@ -319,4 +311,6 @@ void Player::SetupAnimationSystem() {
           .loop = false,
           .flip = false,
       });
+
+  SetAnimation(Entity::EntityAnimationId::IDLE_RIGHT);
 }

@@ -13,7 +13,7 @@ struct CoinEntity : Entity {
 private:
   int amount;
 
-  std::map<Entity*, std::function<void(CoinEntity*)>> collisionCallbacks;
+  std::map<Entity *, std::function<void(CoinEntity *)>> collisionCallbacks;
 
 protected:
   void RegisterAnimations() override {
@@ -66,8 +66,8 @@ public:
 
   int GetScore() { return amount; }
 
-  void AddCollisionCallback(Entity* entity,
-                            std::function<void(CoinEntity*)> callback) {
+  void AddCollisionCallback(Entity *entity,
+                            std::function<void(CoinEntity *)> callback) {
     collisionCallbacks[entity] = callback;
   }
 };
