@@ -62,6 +62,7 @@ private:
   Rectangle GetBoundariesFromPosition(Vector2 position);
   bool IsAvailableToMove(Rectangle newBoundary);
 
+
 public:
   Player(Vector2 position);
   Vector2 GetPosition();

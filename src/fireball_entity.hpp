@@ -9,10 +9,8 @@
 struct FireballEntity : Entity {
 
 protected:
-  void SetupAnimationSystem() {
-    Entity::SetupAnimationSystem();
-
-    animationSystem->RegisterAnimation(
+  void RegisterAnimations() override {
+    RegisterAnimation(
       EntityAnimationId::IDLE,
       AnimationConfig {
           .texturePath = "../assets/pixel_art/2 Dungeon Tileset/3 Animated objects/Fire1.png",
@@ -25,7 +23,7 @@ protected:
           .flip = false,
       });
 
-    animationSystem->Update(EntityAnimationId::IDLE, 0);
+    SetAnimation(EntityAnimationId::IDLE);
   }
 
 public:
@@ -46,13 +44,5 @@ public:
         .width = animationSystem->GetSize().x - offset.x,
         .height = animationSystem->GetSize().y - offset.x,
     };
-  }
-
-  void Update(double deltaTime) override {
-    Entity::Update(deltaTime);
-  }
-
-  void Draw() override {
-    Entity::Draw();
   }
 };

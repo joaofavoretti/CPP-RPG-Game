@@ -32,22 +32,32 @@ struct Entity {
   float scale;
 
   std::unique_ptr<AnimationSystem> animationSystem;
-  std::vector<std::function<bool(Rectangle)>> collisionChecks;
+  std::vector<std::function<void(Rectangle)>> collisionCallbacks;
 
   Entity(Vector2 position, Vector2 velocity, float scale)
-      : position(position), velocity(velocity), scale(scale) {}
+      : position(position), velocity(velocity), scale(scale) {
+  }
 
-  virtual ~Entity() = default; 
+  virtual ~Entity() = default;
 
   Vector2 GetPosition() { return position; }
 
-  void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) {
-    collisionChecks.push_back(collisionCheck);
+  void AddCollisionCallback(std::function<void(Rectangle)> collisionCallback) {
+    collisionCallbacks.push_back(collisionCallback);
   }
 
   void SetupAnimationSystem() {
     animationSystem = std::make_unique<AnimationSystem>();
+    RegisterAnimations();
   }
+
+  void RegisterAnimation(EntityAnimationId id, AnimationConfig config) {
+    animationSystem->RegisterAnimation(id, config);
+  }
+
+  void SetAnimation(EntityAnimationId id) { animationSystem->Update(id, 0); }
+
+  virtual void RegisterAnimations() = 0;
 
   virtual Rectangle GetBoundaries() {
     return Rectangle{
@@ -58,15 +68,19 @@ struct Entity {
     };
   }
 
+  virtual bool IsColliding(Rectangle rect) {
+    return CheckCollisionRecs(GetBoundaries(), rect);
+  }
+
   virtual void Update(double deltaTime) {
     animationSystem->Update(deltaTime);
     animationSystem->SetPosition(position);
   }
 
   virtual void Draw() {
-    #ifdef DEBUG
+#ifdef DEBUG
     DrawRectangleLinesEx(GetBoundaries(), 1, RED);
-    #endif
+#endif
 
     animationSystem->Draw();
   }

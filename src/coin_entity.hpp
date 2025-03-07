@@ -13,9 +13,10 @@ struct CoinEntity : Entity {
 private:
   int amount;
 
+  std::map<Entity*, std::function<void(CoinEntity*)>> collisionCallbacks;
+
 protected:
-  void SetupAnimationSystem() {
-    Entity::SetupAnimationSystem();
+  void RegisterAnimations() override {
 
     const std::map<int, std::string> CoinEntityTexturePaths = {
         {1, "../assets/pixel_art/2 Dungeon Tileset/2 Objects/Other/16.png"},
@@ -37,33 +38,36 @@ protected:
     Vector2 textureTileSize =
         amount < 4 ? CoinEntityTileSize.at(amount) : CoinEntityTileSize.at(-1);
 
-    animationSystem->RegisterAnimation(EntityAnimationId::IDLE,
-                                       AnimationConfig{
-                                           .texturePath = texturePath,
-                                           .textureTileSize = textureTileSize,
-                                           .texturePosition = {0, 0},
-                                           .numberOfFrames = 1,
-                                           .frameSpeed = 0.1f,
-                                           .scale = scale,
-                                           .loop = false,
-                                           .flip = false,
-                                       });
+    RegisterAnimation(EntityAnimationId::IDLE,
+                      AnimationConfig{
+                          .texturePath = texturePath,
+                          .textureTileSize = textureTileSize,
+                          .texturePosition = {0, 0},
+                          .numberOfFrames = 1,
+                          .frameSpeed = 0.1f,
+                          .scale = scale,
+                          .loop = false,
+                          .flip = false,
+                      });
 
-    animationSystem->Update(EntityAnimationId::IDLE, 0);
+    SetAnimation(EntityAnimationId::IDLE);
   }
 
 public:
   CoinEntity(Vector2 position, int amount)
       : Entity(position, {0, 0}, 1.0), amount(amount) {
 
+    SetupAnimationSystem();
+
     if (amount < 1) {
       throw std::invalid_argument("Coin amount must be greater than 0");
     }
-
-    SetupAnimationSystem();
   }
 
-  void Update(double deltaTime) override { Entity::Update(deltaTime); }
+  int GetScore() { return amount; }
 
-  void Draw() override { Entity::Draw(); }
+  void AddCollisionCallback(Entity* entity,
+                            std::function<void(CoinEntity*)> callback) {
+    collisionCallbacks[entity] = callback;
+  }
 };

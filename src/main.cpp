@@ -22,6 +22,12 @@ void Setup() {
   camera = std::make_unique<GameCamera>();
   fireball = std::make_unique<FireballEntity>(Vector2{100, 100}, Vector2{0, 0});
   coin = std::make_unique<CoinEntity>(Vector2{150, 150}, 4);
+
+  // Approach 1
+  /*coin->AddCollisionCallback(player.get(), [&](CoinEntity* coin) {*/
+  /*  player->AddScore(coin->GetScore());*/
+  /*  coin->SetPosition(Vector2{GetRandomValue(100, 200), GetRandomValue(100, 200)});*/
+  /*});*/
 }
 
 void Update(double deltaTime) {
