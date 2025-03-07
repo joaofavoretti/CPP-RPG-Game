@@ -70,4 +70,14 @@ public:
                             std::function<void(CoinEntity *)> callback) {
     collisionCallbacks[entity] = callback;
   }
+
+  void Update(double deltaTime) override {
+    Entity::Update(deltaTime);
+
+    for (auto const &[entity, callback] : collisionCallbacks) {
+      if (CheckCollisionRecs(GetBoundaries(), entity->GetBoundaries())) {
+        callback(this);
+      }
+    }
+  }
 };

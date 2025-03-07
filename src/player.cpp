@@ -4,7 +4,7 @@
 
 #define PLAYER_ANIMATION_BASE_PATH "../assets/pixel_art/1 Characters/1"
 
-Player::Player(Vector2 position) : Entity(position, {0, 0}, PLAYER_SCALE) {
+Player::Player(Vector2 position) : Entity(position, {0, 0}, PLAYER_SCALE), score(0) {
   SetupAnimationSystem();
   SetupProjectileSystem();
 }

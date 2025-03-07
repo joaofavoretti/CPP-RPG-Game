@@ -24,10 +24,10 @@ void Setup() {
   coin = std::make_unique<CoinEntity>(Vector2{150, 150}, 4);
 
   // Approach 1
-  /*coin->AddCollisionCallback(player.get(), [&](CoinEntity* coin) {*/
-  /*  player->AddScore(coin->GetScore());*/
-  /*  coin->SetPosition(Vector2{GetRandomValue(100, 200), GetRandomValue(100, 200)});*/
-  /*});*/
+  coin->AddCollisionCallback(player.get(), [&](CoinEntity* coin) {
+    player->AddScore(coin->GetScore());
+    coin->SetPosition(Vector2{static_cast<float>(GetRandomValue(100, 200)), static_cast<float>(GetRandomValue(100, 200))});
+  });
 }
 
 void Update(double deltaTime) {

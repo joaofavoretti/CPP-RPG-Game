@@ -32,7 +32,6 @@ struct Entity {
   float scale;
 
   std::unique_ptr<AnimationSystem> animationSystem;
-  std::vector<std::function<void(Rectangle)>> collisionCallbacks;
 
   Entity(Vector2 position, Vector2 velocity, float scale)
       : position(position), velocity(velocity), scale(scale) {
@@ -41,10 +40,6 @@ struct Entity {
   virtual ~Entity() = default;
 
   Vector2 GetPosition() { return position; }
-
-  void AddCollisionCallback(std::function<void(Rectangle)> collisionCallback) {
-    collisionCallbacks.push_back(collisionCallback);
-  }
 
   void SetupAnimationSystem() {
     animationSystem = std::make_unique<AnimationSystem>();
@@ -56,6 +51,10 @@ struct Entity {
   }
 
   void SetAnimation(EntityAnimationId id) { animationSystem->Update(id, 0); }
+
+  void SetPosition(Vector2 position) {
+    this->position = position;
+  }
 
   virtual void RegisterAnimations() = 0;
 

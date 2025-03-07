@@ -17,6 +17,7 @@
 struct Player : Entity {
 private:
   float speed = PLAYER_BASE_SPEED * PLAYER_SCALE;
+  int score;
 
   Entity::EntityAnimationId lastMoveAnimation = Entity::EntityAnimationId::MOVE_RIGHT;
 
@@ -49,6 +50,7 @@ public:
   Vector2 GetBoundaryCenter();
   Rectangle GetBoundaries() override;
   void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck);
+  void AddScore(int amount) { score += amount; }
   Entity::EntityAnimationId GetLastMoveAnimation();
   void Update(double deltaTime) override;
   void Draw() override;
