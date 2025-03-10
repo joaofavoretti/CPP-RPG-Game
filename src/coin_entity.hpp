@@ -73,7 +73,7 @@ public:
 
     t += deltaTime;
     float floatAmplitude = 0.1f;
-    float floatSpeed = 7.0f;
+    float floatSpeed = 5.0f;
     SetPosition(Vector2{position.x, position.y + static_cast<float>(floatAmplitude * sin(floatSpeed * t))});
   }
 };

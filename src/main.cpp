@@ -23,10 +23,6 @@ void CreateCoin() {
   coin->AddCollisionCallback(player.get(), [&](Entity *coinEntity) {
     CoinEntity *currentCoin = dynamic_cast<CoinEntity *>(coinEntity);
     player->AddScore(currentCoin->GetScore());
-    /*coin->SetPosition(Vector2{static_cast<float>(GetRandomValue(100, 200)),
-     * static_cast<float>(GetRandomValue(100, 200))});*/
-
-    // Free the coin memory and create a new one
     CreateCoin();
   });
 }
