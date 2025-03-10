@@ -2,17 +2,34 @@
 #include <memory>
 #include <raylib.h>
 
+#include "coin_entity.hpp"
+#include "fireball_entity.hpp"
 #include "game_camera.hpp"
 #include "game_map.hpp"
 #include "player.hpp"
-#include "fireball_entity.hpp"
-#include "coin_entity.hpp"
 
 std::unique_ptr<Player> player;
 std::unique_ptr<GameMap> map;
 std::unique_ptr<GameCamera> camera;
 std::unique_ptr<FireballEntity> fireball;
 std::unique_ptr<CoinEntity> coin;
+
+void CreateCoin() {
+  coin = std::make_unique<CoinEntity>(
+      Vector2{static_cast<float>(GetRandomValue(100, 200)),
+              static_cast<float>(GetRandomValue(100, 200))},
+      GetRandomValue(1, 4));
+
+  coin->AddCollisionCallback(player.get(), [&](Entity *coinEntity) {
+    CoinEntity *currentCoin = dynamic_cast<CoinEntity *>(coinEntity);
+    player->AddScore(currentCoin->GetScore());
+    /*coin->SetPosition(Vector2{static_cast<float>(GetRandomValue(100, 200)),
+     * static_cast<float>(GetRandomValue(100, 200))});*/
+
+    // Free the coin memory and create a new one
+    CreateCoin();
+  });
+}
 
 void Setup() {
   map = std::make_unique<GameMap>(GameMapOption::MAIN_HALL);
@@ -21,13 +38,7 @@ void Setup() {
       [&](Rectangle rect) { return map->IsColliding(rect); });
   camera = std::make_unique<GameCamera>();
   fireball = std::make_unique<FireballEntity>(Vector2{100, 100}, Vector2{0, 0});
-  coin = std::make_unique<CoinEntity>(Vector2{150, 150}, 4);
-
-  // Approach 1
-  coin->AddCollisionCallback(player.get(), [&](CoinEntity* coin) {
-    player->AddScore(coin->GetScore());
-    coin->SetPosition(Vector2{static_cast<float>(GetRandomValue(100, 200)), static_cast<float>(GetRandomValue(100, 200))});
-  });
+  CreateCoin();
 }
 
 void Update(double deltaTime) {
@@ -48,6 +59,8 @@ void Draw() {
   coin->Draw();
   player->Draw();
   EndMode2D();
+
+  DrawText(TextFormat("Score: %i", player->GetScore()), 10, 10, 20, GREEN);
 }
 
 int main() {
@@ -66,7 +79,7 @@ int main() {
 
     BeginDrawing();
     Draw();
-    DrawFPS(10, 10);
+    /*DrawFPS(10, 10);*/
     EndDrawing();
   }
 

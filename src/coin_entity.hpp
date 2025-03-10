@@ -13,7 +13,7 @@ struct CoinEntity : Entity {
 private:
   int amount;
 
-  std::map<Entity *, std::function<void(CoinEntity *)>> collisionCallbacks;
+  std::map<Entity *, std::function<void(Entity *)>> collisionCallbacks;
 
 protected:
   void RegisterAnimations() override {
@@ -66,18 +66,14 @@ public:
 
   int GetScore() { return amount; }
 
-  void AddCollisionCallback(Entity *entity,
-                            std::function<void(CoinEntity *)> callback) {
-    collisionCallbacks[entity] = callback;
-  }
+  double t = 0;
 
   void Update(double deltaTime) override {
     Entity::Update(deltaTime);
 
-    for (auto const &[entity, callback] : collisionCallbacks) {
-      if (CheckCollisionRecs(GetBoundaries(), entity->GetBoundaries())) {
-        callback(this);
-      }
-    }
+    t += deltaTime;
+    float floatAmplitude = 0.1f;
+    float floatSpeed = 7.0f;
+    SetPosition(Vector2{position.x, position.y + static_cast<float>(floatAmplitude * sin(floatSpeed * t))});
   }
 };

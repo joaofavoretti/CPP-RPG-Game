@@ -32,6 +32,7 @@ struct Entity {
   float scale;
 
   std::unique_ptr<AnimationSystem> animationSystem;
+  std::map<Entity *, std::function<void(Entity *)>> collisionCallbacks;
 
   Entity(Vector2 position, Vector2 velocity, float scale)
       : position(position), velocity(velocity), scale(scale) {
@@ -48,6 +49,11 @@ struct Entity {
 
   void RegisterAnimation(EntityAnimationId id, AnimationConfig config) {
     animationSystem->RegisterAnimation(id, config);
+  }
+
+  void AddCollisionCallback(Entity *entity,
+                            std::function<void(Entity *)> callback) {
+    collisionCallbacks[entity] = callback;
   }
 
   void SetAnimation(EntityAnimationId id) { animationSystem->Update(id, 0); }
@@ -71,9 +77,20 @@ struct Entity {
     return CheckCollisionRecs(GetBoundaries(), rect);
   }
 
+  virtual void CheckCollisionCallbacks() {
+    for (auto const &[entity, callback] : collisionCallbacks) {
+      if (CheckCollisionRecs(GetBoundaries(), entity->GetBoundaries())) {
+        callback(this);
+      }
+    }
+  }
+
   virtual void Update(double deltaTime) {
     animationSystem->Update(deltaTime);
     animationSystem->SetPosition(position);
+
+    CheckCollisionCallbacks();
+
   }
 
   virtual void Draw() {
