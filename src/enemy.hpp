@@ -1,9 +1,9 @@
 #pragma once
 
+#include <iostream>
 #include <raylib.h>
 #include <raymath.h>
 #include <set>
-#include <iostream>
 
 #include "entity.hpp"
 
@@ -190,12 +190,42 @@ public:
   }
 
   Rectangle GetBoundariesFromPosition(Vector2 position) {
-    Rectangle boundaries = {
-        .x = 0,
-        .y = 12,
-        .width = static_cast<float>(animationSystem->GetSize().x * 2.1 / 3),
-        .height = animationSystem->GetSize().y / 4,
+    std::map<Entity::EntityAnimationId, Rectangle> animationBoundaryMap = {
+        {Entity::EntityAnimationId::MOVE_RIGHT,
+         Rectangle{
+             .x = 0,
+             .y = 12,
+             .width =
+                 static_cast<float>(animationSystem->GetSize().x * 2.1 / 3),
+             .height = static_cast<float>(animationSystem->GetSize().y * 1.1 / 4),
+         }},
+        {Entity::EntityAnimationId::MOVE_LEFT,
+         Rectangle{
+             .x = 9,
+             .y = 12,
+             .width =
+                 static_cast<float>(animationSystem->GetSize().x * 2.1 / 3),
+             .height = static_cast<float>(animationSystem->GetSize().y * 1.1 / 4),
+         }},
+        {Entity::EntityAnimationId::MOVE_UP,
+         Rectangle{
+             .x = 10,
+             .y = 7,
+             .width =
+                 static_cast<float>(animationSystem->GetSize().x * 1.1 / 3),
+             .height = animationSystem->GetSize().y * 2 / 3,
+         }},
+        {Entity::EntityAnimationId::MOVE_DOWN,
+         Rectangle{
+             .x = 9,
+             .y = 3,
+             .width =
+                 static_cast<float>(animationSystem->GetSize().x * 1.1 / 3),
+             .height = static_cast<float>(animationSystem->GetSize().y  * 1.8 / 3),
+         }},
     };
+
+    Rectangle boundaries = animationBoundaryMap[lastMoveAnimation];
 
     return Rectangle{
         .x = position.x + boundaries.x,
@@ -211,7 +241,8 @@ public:
     }
 
     if (target != nullptr) {
-      if (Vector2Distance(target->GetBoundaryCenter(), GetBoundaryCenter()) > followRange) {
+      if (Vector2Distance(target->GetBoundaryCenter(), GetBoundaryCenter()) >
+          followRange) {
         target = nullptr;
       }
     }
@@ -221,8 +252,8 @@ public:
       float closestDistance = followRange;
 
       for (auto possibleTarget : possibleTargets) {
-        float distance =
-            Vector2Distance(possibleTarget->GetBoundaryCenter(), GetBoundaryCenter());
+        float distance = Vector2Distance(possibleTarget->GetBoundaryCenter(),
+                                         GetBoundaryCenter());
         if (distance < followRange && distance < closestDistance) {
           closestDistance = distance;
           closestTarget = possibleTarget;
@@ -246,7 +277,8 @@ public:
     };
 
     float angle = atan2(velocity.y, velocity.x);
-    if (angle < 0) angle += 2 * PI;
+    if (angle < 0)
+      angle += 2 * PI;
     angle += PI / 4;
     angle = fmod(angle, 2 * PI);
     int index = static_cast<int>(angle / (PI / 2));
