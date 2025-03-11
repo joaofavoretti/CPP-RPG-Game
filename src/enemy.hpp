@@ -15,8 +15,10 @@ struct Enemy : Entity {
   Entity *target = nullptr;
   std::set<Entity *> possibleTargets;
   int attackDamage = 10;
-  float attackRange = 5.0f;
-  float followRange = 50.0f;
+  float attackRange = 40.0f;
+  float followRange = 60.0f;
+  float attackCooldown = 1.0f;
+  float attackCooldownTimer = 0.0f;
 
   Entity::EntityAnimationId lastMoveAnimation =
       Entity::EntityAnimationId::MOVE_RIGHT;
@@ -197,7 +199,8 @@ public:
              .y = 12,
              .width =
                  static_cast<float>(animationSystem->GetSize().x * 2.1 / 3),
-             .height = static_cast<float>(animationSystem->GetSize().y * 1.1 / 4),
+             .height =
+                 static_cast<float>(animationSystem->GetSize().y * 1.1 / 4),
          }},
         {Entity::EntityAnimationId::MOVE_LEFT,
          Rectangle{
@@ -205,7 +208,8 @@ public:
              .y = 12,
              .width =
                  static_cast<float>(animationSystem->GetSize().x * 2.1 / 3),
-             .height = static_cast<float>(animationSystem->GetSize().y * 1.1 / 4),
+             .height =
+                 static_cast<float>(animationSystem->GetSize().y * 1.1 / 4),
          }},
         {Entity::EntityAnimationId::MOVE_UP,
          Rectangle{
@@ -221,7 +225,8 @@ public:
              .y = 3,
              .width =
                  static_cast<float>(animationSystem->GetSize().x * 1.1 / 3),
-             .height = static_cast<float>(animationSystem->GetSize().y  * 1.8 / 3),
+             .height =
+                 static_cast<float>(animationSystem->GetSize().y * 1.8 / 3),
          }},
     };
 
@@ -319,18 +324,36 @@ public:
                                {Entity::EntityAnimationId::MOVE_DOWN,
                                 Entity::EntityAnimationId::ATTACK_DOWN}};
 
+    if (IsInAttackRange()) {
+      if (attackCooldownTimer == 0.0f) {
+        attackCooldownTimer = 0.0f;
+        animationSystem->Update(attackAnimationsMap[lastMoveAnimation],
+                                deltaTime);
+      } else {
+        animationSystem->Update(idleAnimationsMap[lastMoveAnimation],
+                                deltaTime);
+      }
+
+      velocity = {0.0f, 0.0f};
+      attackCooldownTimer = fmod(fmin(attackCooldownTimer + deltaTime, attackCooldown), attackCooldown);
+      animationSystem->SetPosition(position);
+
+      return;
+    }
+
     if (Vector2Length(velocity) == 0) {
       animationSystem->Update(idleAnimationsMap[lastMoveAnimation], deltaTime);
     } else {
       animationSystem->Update(lastMoveAnimation, deltaTime);
     }
 
-    if (IsKeyDown(KEY_SPACE)) {
-      animationSystem->Update(attackAnimationsMap[lastMoveAnimation],
-                              deltaTime);
-    }
-
     animationSystem->SetPosition(position);
+  }
+
+  bool IsInAttackRange() {
+    return target != nullptr &&
+           Vector2Distance(target->GetBoundaryCenter(), GetBoundaryCenter()) <
+               attackRange;
   }
 
   void AddPossibleTarget(Entity *target) { possibleTargets.insert(target); }
@@ -347,8 +370,9 @@ public:
 
     UpdateVelocity(deltaTime);
     UpdateLastAnimationFromVelocity(deltaTime);
-    position = Vector2Add(position, velocity);
     UpdateAnimationSystem(deltaTime);
+
+    position = Vector2Add(position, velocity);
 
     velocity = {0.0f, 0.0f};
   }
@@ -360,6 +384,9 @@ public:
     Vector2 center = GetBoundaryCenter();
     DrawCircleLines(static_cast<int>(center.x), static_cast<int>(center.y),
                     followRange, RED);
+
+    DrawCircleLines(static_cast<int>(center.x), static_cast<int>(center.y),
+                    attackRange, BLUE);
 #endif
   }
 };
