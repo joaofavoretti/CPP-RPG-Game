@@ -134,13 +134,8 @@ Entity::EntityAnimationId Player::GetLastMoveAnimation() {
 }
 
 void Player::Draw() {
+  Entity::Draw();
   projectileSystem->Draw();
-  animationSystem->Draw();
-
-#ifdef DEBUG
-  DrawRectangleLines(GetBoundaries().x, GetBoundaries().y,
-                     GetBoundaries().width, GetBoundaries().height, RED);
-#endif
 }
 
 void Player::SetupProjectileSystem() {
