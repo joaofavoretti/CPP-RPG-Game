@@ -47,7 +47,6 @@ private:
 
 public:
   Player(Vector2 position);
-  Vector2 GetBoundaryCenter();
   Rectangle GetBoundaries() override;
   int GetScore() { return score; }
   void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck);

@@ -103,12 +103,6 @@ void Player::Update(double deltaTime) {
   velocity = {0.0f, 0.0f};
 }
 
-Vector2 Player::GetBoundaryCenter() {
-  Rectangle boundaries = GetBoundaries();
-  return {boundaries.x + boundaries.width / 2.0f,
-          boundaries.y + boundaries.height / 2.0f};
-}
-
 Rectangle Player::GetBoundaries() {
   return GetBoundariesFromPosition(position);
 }

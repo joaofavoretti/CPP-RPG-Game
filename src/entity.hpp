@@ -35,8 +35,7 @@ struct Entity {
   std::map<Entity *, std::function<void(Entity *)>> collisionCallbacks;
 
   Entity(Vector2 position, Vector2 velocity, float scale)
-      : position(position), velocity(velocity), scale(scale) {
-  }
+      : position(position), velocity(velocity), scale(scale) {}
 
   virtual ~Entity() = default;
 
@@ -58,11 +57,15 @@ struct Entity {
 
   void SetAnimation(EntityAnimationId id) { animationSystem->Update(id, 0); }
 
-  void SetPosition(Vector2 position) {
-    this->position = position;
-  }
+  void SetPosition(Vector2 position) { this->position = position; }
 
   virtual void RegisterAnimations() = 0;
+
+  virtual Vector2 GetBoundaryCenter() {
+    Rectangle boundaries = GetBoundaries();
+    return {boundaries.x + boundaries.width / 2.0f,
+            boundaries.y + boundaries.height / 2.0f};
+  }
 
   virtual Rectangle GetBoundaries() {
     return Rectangle{
@@ -90,7 +93,6 @@ struct Entity {
     animationSystem->SetPosition(position);
 
     CheckCollisionCallbacks();
-
   }
 
   virtual void Draw() {

@@ -211,7 +211,7 @@ public:
     }
 
     if (target != nullptr) {
-      if (Vector2Distance(target->GetPosition(), position) > followRange) {
+      if (Vector2Distance(target->GetBoundaryCenter(), GetBoundaryCenter()) > followRange) {
         target = nullptr;
       }
     }
@@ -222,8 +222,8 @@ public:
 
       for (auto possibleTarget : possibleTargets) {
         float distance =
-            Vector2Distance(possibleTarget->GetPosition(), position);
-        if (distance < closestDistance) {
+            Vector2Distance(possibleTarget->GetBoundaryCenter(), GetBoundaryCenter());
+        if (distance < followRange && distance < closestDistance) {
           closestDistance = distance;
           closestTarget = possibleTarget;
         }
@@ -325,7 +325,8 @@ public:
     Entity::Draw();
 
 #ifdef DEBUG
-    DrawCircleLines(static_cast<int>(position.x), static_cast<int>(position.y),
+    Vector2 center = GetBoundaryCenter();
+    DrawCircleLines(static_cast<int>(center.x), static_cast<int>(center.y),
                     followRange, RED);
 #endif
   }
