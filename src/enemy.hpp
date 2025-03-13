@@ -12,8 +12,8 @@
 
 struct Enemy : LiveEntity {
   float speed = 30.0f;
-  Entity *target = nullptr;
-  std::set<Entity *> possibleTargets;
+  LiveEntity *target = nullptr;
+  std::set<LiveEntity *> possibleTargets;
   int attackDamage = 10;
   float attackRange = 40.0f;
   float followRange = 60.0f;
@@ -249,7 +249,7 @@ public:
     }
 
     if (target == nullptr) {
-      Entity *closestTarget = nullptr;
+      LiveEntity *closestTarget = nullptr;
       float closestDistance = followRange;
 
       for (auto possibleTarget : possibleTargets) {
@@ -323,6 +323,9 @@ public:
     if (IsInAttackRange()) {
       if (attackCooldownTimer == 0.0f) {
         attackCooldownTimer = 0.0f;
+        target->TakeDamage(attackDamage);
+        std::cout << "Enemy attacked player" << std::endl;
+        std::cout << "Player health: " << target->health << std::endl;
         animationSystem->Update(attackAnimationsMap[lastMoveAnimation],
                                 deltaTime);
       } else {
@@ -354,9 +357,11 @@ public:
                attackRange;
   }
 
-  void AddPossibleTarget(Entity *target) { possibleTargets.insert(target); }
+  void AddPossibleTarget(LiveEntity *target) { possibleTargets.insert(target); }
 
-  void RemovePossibleTarget(Entity *target) { possibleTargets.erase(target); }
+  void RemovePossibleTarget(LiveEntity *target) {
+    possibleTargets.erase(target);
+  }
 
   void Update(double deltaTime) override {
     UpdateFollowTarget(deltaTime);

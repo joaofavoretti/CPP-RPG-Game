@@ -41,8 +41,8 @@ public:
     Rectangle boundary = GetBoundaries();
     Vector2 boundaryCenter = GetBoundaryCenter();
 
-    DrawRectangle(boundaryCenter.x - enemyHealthBarWidth / 2, boundary.y - 5, enemyHealthBarWidth * health / maxHealth, 1, BLACK);
-    DrawRectangle(boundaryCenter.x - enemyHealthBarWidth / 2, boundary.y - 5, enemyHealthBarWidth, 1, RED);
+    DrawRectangle(boundaryCenter.x - enemyHealthBarWidth / 2, boundary.y - 5, enemyHealthBarWidth, 1, BLACK);
+    DrawRectangle(boundaryCenter.x - enemyHealthBarWidth / 2, boundary.y - 5, enemyHealthBarWidth * health / maxHealth, 1, RED);
   }
  
   void Draw() override {
