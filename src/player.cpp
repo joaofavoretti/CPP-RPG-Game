@@ -4,7 +4,8 @@
 
 #define PLAYER_ANIMATION_BASE_PATH "../assets/pixel_art/1 Characters/1"
 
-Player::Player(Vector2 position) : Entity(position, {0, 0}, PLAYER_SCALE), score(0) {
+Player::Player(Vector2 position)
+    : LiveEntity(position, {0, 0}, PLAYER_SCALE, 200), score(0) {
   SetupAnimationSystem();
   SetupProjectileSystem();
 }
@@ -53,16 +54,6 @@ void Player::UpdateAnimationSystem(double deltaTime) {
   animationSystem->SetPosition(position);
 }
 
-bool Player::IsAvailableToMove(Rectangle newBoundary) {
-  for (auto &collisionCheck : collisionChecks) {
-    if (collisionCheck(newBoundary)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void Player::Update(double deltaTime) {
   UpdateProjectileSystem(deltaTime);
 
@@ -103,10 +94,6 @@ void Player::Update(double deltaTime) {
   velocity = {0.0f, 0.0f};
 }
 
-Rectangle Player::GetBoundaries() {
-  return GetBoundariesFromPosition(position);
-}
-
 Rectangle Player::GetBoundariesFromPosition(Vector2 position) {
   Vector2 offset = {8, 3};
 
@@ -119,7 +106,7 @@ Rectangle Player::GetBoundariesFromPosition(Vector2 position) {
 }
 
 void Player::AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) {
-  collisionChecks.push_back(collisionCheck);
+  LiveEntity::AddCollisionCheck(collisionCheck);
   projectileSystem->AddCollisionCheck(collisionCheck);
 }
 
@@ -128,7 +115,7 @@ Entity::EntityAnimationId Player::GetLastMoveAnimation() {
 }
 
 void Player::Draw() {
-  Entity::Draw();
+  LiveEntity::Draw();
   projectileSystem->Draw();
 }
 

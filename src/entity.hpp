@@ -67,13 +67,17 @@ struct Entity {
             boundaries.y + boundaries.height / 2.0f};
   }
 
-  virtual Rectangle GetBoundaries() {
+  virtual Rectangle GetBoundariesFromPosition(Vector2 position) {
     return Rectangle{
         .x = position.x,
         .y = position.y,
         .width = animationSystem->GetSize().x,
         .height = animationSystem->GetSize().y,
     };
+  }
+
+  virtual Rectangle GetBoundaries() {
+    return GetBoundariesFromPosition(position);
   }
 
   virtual bool IsColliding(Rectangle rect) {

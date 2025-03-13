@@ -36,6 +36,8 @@ void Setup() {
       [&](Rectangle rect) { return map->IsColliding(rect); });
   enemy = std::make_unique<Enemy>(Vector2{150, 100});
   enemy->AddPossibleTarget(player.get());
+  enemy->AddCollisionCheck(
+      [&](Rectangle rect) { return map->IsColliding(rect); });
   camera = std::make_unique<GameCamera>();
   fireball = std::make_unique<FireballEntity>(Vector2{100, 100}, Vector2{0, 0});
   CreateCoin();

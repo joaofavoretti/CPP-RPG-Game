@@ -6,11 +6,11 @@
 #include <set>
 
 #include "entity.hpp"
+#include "live_entity.hpp"
 
 #define ENEMY_ANIMATION_BASE_PATH "../assets/pixel_art/3 Dungeon Enemies/1"
 
-struct Enemy : Entity {
-
+struct Enemy : LiveEntity {
   float speed = 30.0f;
   Entity *target = nullptr;
   std::set<Entity *> possibleTargets;
@@ -183,15 +183,11 @@ protected:
   }
 
 public:
-  Enemy(Vector2 position) : Entity(position, Vector2{0, 0}, 1.0f) {
+  Enemy(Vector2 position) : LiveEntity(position, Vector2{0, 0}, 1.0f, 100) {
     SetupAnimationSystem();
   }
 
-  Rectangle GetBoundaries() override {
-    return GetBoundariesFromPosition(position);
-  }
-
-  Rectangle GetBoundariesFromPosition(Vector2 position) {
+  Rectangle GetBoundariesFromPosition(Vector2 position) override {
     std::map<Entity::EntityAnimationId, Rectangle> animationBoundaryMap = {
         {Entity::EntityAnimationId::MOVE_RIGHT,
          Rectangle{
@@ -335,7 +331,9 @@ public:
       }
 
       velocity = {0.0f, 0.0f};
-      attackCooldownTimer = fmod(fmin(attackCooldownTimer + deltaTime, attackCooldown), attackCooldown);
+      attackCooldownTimer =
+          fmod(fmin(attackCooldownTimer + deltaTime, attackCooldown),
+               attackCooldown);
       animationSystem->SetPosition(position);
 
       return;
@@ -372,13 +370,17 @@ public:
     UpdateLastAnimationFromVelocity(deltaTime);
     UpdateAnimationSystem(deltaTime);
 
-    position = Vector2Add(position, velocity);
+    Vector2 newPosition = Vector2Add(position, velocity);
+    Rectangle newBoundary = GetBoundariesFromPosition(newPosition);
+    if (IsAvailableToMove(newBoundary)) {
+      position = newPosition;
+    }
 
     velocity = {0.0f, 0.0f};
   }
 
   void Draw() override {
-    Entity::Draw();
+    LiveEntity::Draw();
 
 #ifdef DEBUG
     Vector2 center = GetBoundaryCenter();

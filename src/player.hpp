@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "entity.hpp"
+#include "live_entity.hpp"
 #include "projectile_system.hpp"
 
 #define PLAYER_SCALE 1.0f
 #define PLAYER_BASE_SPEED 60.0f
 
 
-struct Player : Entity {
+struct Player : LiveEntity {
 private:
   float speed = PLAYER_BASE_SPEED * PLAYER_SCALE;
   int score;
@@ -22,8 +23,6 @@ private:
   Entity::EntityAnimationId lastMoveAnimation = Entity::EntityAnimationId::MOVE_RIGHT;
 
   std::unique_ptr<ProjectileSystem> projectileSystem;
-
-  std::vector<std::function<bool(Rectangle)>> collisionChecks;
 
   std::map<Entity::EntityAnimationId, Entity::EntityAnimationId> idleAnimations = {
     {Entity::EntityAnimationId::MOVE_RIGHT, Entity::EntityAnimationId::IDLE_RIGHT},
@@ -41,16 +40,13 @@ private:
   void SetupProjectileSystem();
   void UpdateProjectileSystem(double deltaTime);
   void UpdateAnimationSystem(double deltaTime);
-  Rectangle GetBoundariesFromPosition(Vector2 position);
-  bool IsAvailableToMove(Rectangle newBoundary);
-
 
 public:
   Player(Vector2 position);
-  Rectangle GetBoundaries() override;
+  Rectangle GetBoundariesFromPosition(Vector2 position) override;
   int GetScore() { return score; }
-  void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck);
   void AddScore(int amount) { score += amount; }
+  void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) override;
   Entity::EntityAnimationId GetLastMoveAnimation();
   void Update(double deltaTime) override;
   void Draw() override;
