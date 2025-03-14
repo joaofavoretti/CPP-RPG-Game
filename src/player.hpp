@@ -47,6 +47,10 @@ public:
   int GetScore() { return score; }
   void AddScore(int amount) { score += amount; }
   void AddCollisionCheck(std::function<bool(Rectangle)> collisionCheck) override;
+  void AddPossibleTarget(LiveEntity *target) override { 
+    LiveEntity::AddPossibleTarget(target);
+    projectileSystem->AddPossibleTarget(target);
+  }
   Entity::EntityAnimationId GetLastMoveAnimation();
   void Update(double deltaTime) override;
   void Draw() override;

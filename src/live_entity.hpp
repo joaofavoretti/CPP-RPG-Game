@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include <set>
 
 #include "entity.hpp"
 
@@ -12,6 +13,7 @@ struct LiveEntity : Entity {
   int enemyHealthBarWidth;
 
   std::vector<std::function<bool(Rectangle)>> collisionChecks;
+  std::set<LiveEntity *> possibleTargets;
 
 public:
   LiveEntity(Vector2 position, Vector2 velocity, float scale, int health)
@@ -19,7 +21,21 @@ public:
   }
 
   void TakeDamage(int damage) {
-    health -= damage;
+    health = fmax(health - damage, 0);
+  }
+
+  bool IsDead() {
+    return health <= 0;
+  }
+
+  bool IsAlive() {
+    return !IsDead();
+  }
+
+  virtual void AddPossibleTarget(LiveEntity *target) { possibleTargets.insert(target); }
+
+  virtual void RemovePossibleTarget(LiveEntity *target) {
+    possibleTargets.erase(target);
   }
 
   bool IsAvailableToMove(Rectangle newBoundary) {

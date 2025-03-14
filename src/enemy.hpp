@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <raylib.h>
 #include <raymath.h>
 #include <set>
@@ -13,7 +12,6 @@
 struct Enemy : LiveEntity {
   float speed = 30.0f;
   LiveEntity *target = nullptr;
-  std::set<LiveEntity *> possibleTargets;
   int attackDamage = 10;
   float attackRange = 40.0f;
   float followRange = 60.0f;
@@ -324,8 +322,6 @@ public:
       if (attackCooldownTimer == 0.0f) {
         attackCooldownTimer = 0.0f;
         target->TakeDamage(attackDamage);
-        std::cout << "Enemy attacked player" << std::endl;
-        std::cout << "Player health: " << target->health << std::endl;
         animationSystem->Update(attackAnimationsMap[lastMoveAnimation],
                                 deltaTime);
       } else {
@@ -355,12 +351,6 @@ public:
     return target != nullptr &&
            Vector2Distance(target->GetBoundaryCenter(), GetBoundaryCenter()) <
                attackRange;
-  }
-
-  void AddPossibleTarget(LiveEntity *target) { possibleTargets.insert(target); }
-
-  void RemovePossibleTarget(LiveEntity *target) {
-    possibleTargets.erase(target);
   }
 
   void Update(double deltaTime) override {

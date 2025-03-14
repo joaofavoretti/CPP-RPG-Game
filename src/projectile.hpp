@@ -18,6 +18,7 @@ private:
   float angle;
   float speed;
   Rectangle boundaryConfig;
+  int attackDamage = 10;
   std::unique_ptr<Animation> animation;
 
 public:
@@ -25,6 +26,7 @@ public:
              Rectangle boundaryConfig);
   Rectangle GetBoundaries();
   Vector2 GetPosition();
+  int GetDamage() { return attackDamage; }
   void Update(double deltaTime);
   void Draw();
 };

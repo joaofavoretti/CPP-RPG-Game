@@ -3,10 +3,10 @@
 #include <raylib.h>
 
 #include "coin_entity.hpp"
+#include "enemy.hpp"
 #include "fireball_entity.hpp"
 #include "game_camera.hpp"
 #include "game_map.hpp"
-#include "enemy.hpp"
 #include "player.hpp"
 
 std::unique_ptr<Player> player;
@@ -38,6 +38,7 @@ void Setup() {
   enemy->AddPossibleTarget(player.get());
   enemy->AddCollisionCheck(
       [&](Rectangle rect) { return map->IsColliding(rect); });
+  player->AddPossibleTarget(enemy.get());
   camera = std::make_unique<GameCamera>();
   fireball = std::make_unique<FireballEntity>(Vector2{100, 100}, Vector2{0, 0});
   CreateCoin();
@@ -46,8 +47,14 @@ void Setup() {
 void Update(double deltaTime) {
   fireball->Update(deltaTime);
   coin->Update(deltaTime);
-  player->Update(deltaTime);
-  enemy->Update(deltaTime);
+
+  if (player->IsAlive()) {
+    player->Update(deltaTime);
+  }
+
+  if (enemy->IsAlive()) {
+    enemy->Update(deltaTime);
+  }
 
   camera->FollowTarget(player->GetBoundaryCenter());
   camera->Update(deltaTime);
@@ -60,8 +67,15 @@ void Draw() {
   map->Draw();
   fireball->Draw();
   coin->Draw();
-  player->Draw();
-  enemy->Draw();
+
+  if (player->IsAlive()) {
+    player->Draw();
+  }
+
+  if (enemy->IsAlive()) {
+    enemy->Draw();
+  }
+
   EndMode2D();
 
   DrawText(TextFormat("Score: %i", player->GetScore()), 10, 10, 20, GREEN);
