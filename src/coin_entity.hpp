@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <raylib.h>
 #include <raymath.h>
@@ -8,12 +9,16 @@
 
 #include "animation_config.hpp"
 #include "entity.hpp"
+#include "player.hpp"
 
 struct CoinEntity : Entity {
 private:
   int amount;
-
-  std::map<Entity *, std::function<void(Entity *)>> collisionCallbacks;
+  float targetFollowRange = 60.0f;
+  Player *target = nullptr;
+  Vector2 attractionSpeed = {0.0f, 0.0f};
+  float attractionSpeedFactor = 0.8f;
+  float maxAttractionSpeed = 1.0f;
 
 protected:
   void RegisterAnimations() override {
@@ -66,14 +71,60 @@ public:
 
   int GetScore() { return amount; }
 
+  void AddTarget(Player *target) { this->target = target; }
+
   double t = 0;
-
   void Update(double deltaTime) override {
-    Entity::Update(deltaTime);
+    animationSystem->Update(deltaTime);
+    animationSystem->SetPosition(position);
 
+    // Be attracted to the nearest player
+    if (target != nullptr &&
+        Vector2Distance(target->GetBoundaryCenter(), GetBoundaryCenter()) <
+            targetFollowRange) {
+
+      Vector2 direction = Vector2Normalize(
+          Vector2Subtract(target->GetBoundaryCenter(), GetBoundaryCenter()));
+
+      attractionSpeed =
+          Vector2Add(Vector2Scale(direction, attractionSpeedFactor * deltaTime),
+                     Vector2Scale(attractionSpeed, 0.99f));
+
+      if (Vector2Length(attractionSpeed) > maxAttractionSpeed) {
+        attractionSpeed =
+            Vector2Scale(Vector2Normalize(attractionSpeed), maxAttractionSpeed);
+      }
+
+      /*std::cout << "Attraction speed: " << attractionSpeed.x << ", "*/
+      /*          << attractionSpeed.y << std::endl;*/
+      std::cout << "Size: " << Vector2Length(attractionSpeed) << std::endl;
+
+      position = Vector2Add(position, attractionSpeed);
+
+      CheckCollisionCallbacks();
+      return;
+    } else {
+      attractionSpeed = Vector2Scale(attractionSpeed, 0.99f);
+      position = Vector2Add(position, attractionSpeed);
+    }
+
+    // Make the coin float motion
     t += deltaTime;
+    t = fmod(t, 3600.0);
     float floatAmplitude = 0.1f;
     float floatSpeed = 5.0f;
-    SetPosition(Vector2{position.x, position.y + static_cast<float>(floatAmplitude * sin(floatSpeed * t))});
+    SetPosition(Vector2{
+        position.x,
+        position.y + static_cast<float>(floatAmplitude * sin(floatSpeed * t))});
+  }
+
+  void Draw() override {
+    Entity::Draw();
+
+#ifdef DEBUG
+    Vector2 center = GetBoundaryCenter();
+    DrawCircleLines(static_cast<int>(center.x), static_cast<int>(center.y),
+                    targetFollowRange, BLUE);
+#endif
   }
 };

@@ -22,11 +22,14 @@ void CreateCoin() {
               static_cast<float>(GetRandomValue(100, 200))},
       GetRandomValue(1, 4));
 
+  coin->AddTarget(player.get());
+
   coin->AddCollisionCallback(player.get(), [&](Entity *coinEntity) {
     CoinEntity *currentCoin = dynamic_cast<CoinEntity *>(coinEntity);
     player->AddScore(currentCoin->GetScore());
     CreateCoin();
   });
+
 }
 
 void Setup() {
