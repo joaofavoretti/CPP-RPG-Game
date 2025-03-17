@@ -9,6 +9,7 @@ Animation::Animation(AnimationConfig config) {
   scale = config.scale;
   flip = config.flip;
   loop = config.loop;
+  floating = config.floating;
 }
 
 void Animation::UpdateScreenPosition(Vector2 screenPosition) {
@@ -44,6 +45,19 @@ void Animation::Draw() {
   Vector2 origin = {0.0f, 0.0f};
 
   float rotation = angle * RAD2DEG;
+
+  if (floating) {
+    DrawTexturePro(texture, sourceRect,
+                   Rectangle{destRect.x + 2, destRect.y + 2, destRect.width,
+                             destRect.height},
+                   origin, rotation, Color{0, 0, 0, 150});
+  } else {
+    DrawTexturePro(texture, sourceRect,
+                   Rectangle{destRect.x + 1, destRect.y + 1, destRect.width,
+                             destRect.height},
+                   origin, rotation, Color{0, 0, 0, 50});
+  }
+
   DrawTexturePro(texture, sourceRect, destRect, origin, rotation, WHITE);
 }
 

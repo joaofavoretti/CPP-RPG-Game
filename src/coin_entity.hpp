@@ -51,6 +51,7 @@ protected:
                           .numberOfFrames = 1,
                           .frameSpeed = 0.1f,
                           .scale = scale,
+                          .floating = true,
                           .loop = false,
                           .flip = false,
                       });
@@ -85,7 +86,6 @@ public:
 
       Vector2 direction = Vector2Normalize(
           Vector2Subtract(target->GetBoundaryCenter(), GetBoundaryCenter()));
-
       attractionSpeed =
           Vector2Add(Vector2Scale(direction, attractionSpeedFactor * deltaTime),
                      Vector2Scale(attractionSpeed, 0.99f));
@@ -95,11 +95,11 @@ public:
             Vector2Scale(Vector2Normalize(attractionSpeed), maxAttractionSpeed);
       }
 
-      /*std::cout << "Attraction speed: " << attractionSpeed.x << ", "*/
-      /*          << attractionSpeed.y << std::endl;*/
-      std::cout << "Size: " << Vector2Length(attractionSpeed) << std::endl;
-
       position = Vector2Add(position, attractionSpeed);
+
+      /*Option to use Lerp instead of a gravitational pull*/
+      /*position = Vector2Lerp(position, target->GetBoundaryCenter(), deltaTime
+       * * 0.5f);*/
 
       CheckCollisionCallbacks();
       return;

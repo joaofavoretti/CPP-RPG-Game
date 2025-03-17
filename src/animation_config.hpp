@@ -10,6 +10,7 @@ struct AnimationConfig {
   int numberOfFrames;
   float frameSpeed;
   float scale;
+  bool floating = false;
   bool loop = false;
   bool flip = false;
 };

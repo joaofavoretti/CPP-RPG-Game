@@ -15,6 +15,7 @@ struct Animation {
   bool loop;
   bool flip;
   float scale;
+  bool floating;
   Vector2 screenPosition = {0, 0};
   Vector2 offset = {0, 0};
   float angle = 0.0f;

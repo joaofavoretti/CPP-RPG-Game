@@ -29,7 +29,6 @@ void CreateCoin() {
     player->AddScore(currentCoin->GetScore());
     CreateCoin();
   });
-
 }
 
 void Setup() {

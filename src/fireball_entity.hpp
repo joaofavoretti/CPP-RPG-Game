@@ -19,6 +19,7 @@ protected:
           .numberOfFrames = 8,
           .frameSpeed = 0.1f,
           .scale = scale,
+          .floating = true,
           .loop = true,
           .flip = false,
       });
